@@ -62,7 +62,6 @@ Here, in Part 2 of the statistics demo, we'll continue using the `starwars` data
 
 It's worth noting up top that for common stats like these, there are many ways to do the same thing in R. I'll show you the way I think is most straightforward, but you may find other packages or functions that you prefer.
 
-
 ```{r}
 #| label: load-sw-df
 
@@ -90,7 +89,7 @@ A 1-sample $t$-test tells you the likelihood that the "true" mean of a value is 
 
 > **Applied example:** A psychologist wants to test whether rates of depression are greater in gradute students than in the general population.
 
-For example, a 1-sample $t$-test on the `mass` variable should return significant results, rejecting the null hypothesis that the true mean is 0. Since mass is necessarily a positive value, it is impossible that the true mean would be 0. 
+For example, a 1-sample $t$-test on the `mass` variable should return significant results, rejecting the null hypothesis that the true mean is 0. Since mass is necessarily a positive value, it is impossible that the true mean would be 0.
 
 ```{r}
 #| label: ttest-simple
@@ -103,7 +102,7 @@ With a $t$-value of `r round(t.test(sw.desc$mass)$statistic, 3)` and a $p$-value
 
 We can alternatively specify the mean that the null hypothesis should assume. Let's assume that the `starwars` dataset contains the mass of literally every character in Star Wars. In that case, the true population mean mass for Star Wars characters is `r round(mean(sw.desc$mass), 3)` kg. We can specify the null/true mean with the `mu` ($/mu$) argument.
 
-Is the mean of this sample different than the true mean? 
+Is the mean of this sample different than the true mean?
 
 ```{r }
 #| label: ttest-mu
@@ -246,7 +245,7 @@ ttest2_humans_1tail
 
 ```
 
-Now we do see a significant effect. We can reject the null hypothesis that the mean mass of females is greater than or equal to that of males are the same ($t$ = `r round(ttest2_humans_1tail$statistic, 3)`, $p$ < `r round(ttest2_humans_1tail$p.value, 3)`).
+Now we do see a significant effect. We can reject the null hypothesis that the mean mass of females is greater than or equal to that of males are the same ($t$ = `r round(ttest2_humans_1tail$statistic, 3)`, $p$ \< `r round(ttest2_humans_1tail$p.value, 3)`).
 
 Notice the importance of ordering in the `t.test()` function. In this 2-tailed 2-sample $t$-test, we want to know test whether it's possible (the null -- the thing we *don't* expect) that the mean mass of females (group 2) is greater than or equal to the mean mass of males, so we put the group we *do* expect to be greater first. Try switching the order of the groups in each of the `t.test()` functions above and see how the results change.
 
@@ -267,28 +266,29 @@ ttest2_humans_1tail_alt
 
 
 ```
+
 Compare the two outputs:
 
-1. The $t$-values are of the same absolute magnitude, but opposite sign (`r round(ttest2_humans_1tail$statistic, 3)` vs. `r round(ttest2_humans_1tail_alt$statistic, 3)`). The $t$-value is calculated based on the difference between the means of the two groups, and the direction of that difference matters.
-2. The $p$-value is the same in both tests, $p$ `apa_p(ttest2_humans_1tail$p.value, add_equals=T)`. The $p$-value is calculated based on the absolute value of the $t$-value, so the direction of the difference doesn't matter.
-3. The alternative hypothesis is different in two ways:
-  1. Direction of difference
-  2. Specificity: formula syntax uses the level names of the factor variable, while the vector syntax simply refers to "the difference in means" without specifying which group is which or the order of inclusion. 
-4. The sample estimates are different in the same two ways:
-  1. Order of the groups
-  2. Specificity: formula syntax uses level names; vector syntax simply uses `x` and `y`
-  
-What are the advantages of each? 
+1.  The $t$-values are of the same absolute magnitude, but opposite sign (`r round(ttest2_humans_1tail$statistic, 3)` vs. `r round(ttest2_humans_1tail_alt$statistic, 3)`). The $t$-value is calculated based on the difference between the means of the two groups, and the direction of that difference matters.
+2.  The $p$-value is the same in both tests, $p$ `apa_p(ttest2_humans_1tail$p.value, add_equals=T)`. The $p$-value is calculated based on the absolute value of the $t$-value, so the direction of the difference doesn't matter.
+3.  The alternative hypothesis is different in two ways:
+4.  Direction of difference
+5.  Specificity: formula syntax uses the level names of the factor variable, while the vector syntax simply refers to "the difference in means" without specifying which group is which or the order of inclusion.
+6.  The sample estimates are different in the same two ways:
+7.  Order of the groups
+8.  Specificity: formula syntax uses level names; vector syntax simply uses `x` and `y`
+
+What are the advantages of each?
 
 #### Analysis choice
 
 Take a second here to compare the motivations and results of these two tests. The first test told us that, statistically, there's no difference between the means of males and females in the SWU. The second test said the opposite: that the mean mass of males is statistically significantly greater than the mean mass of females.
 
-As a scientist, which results are we going to stand behind? The difference in totally fictional mass between male and female humans in the Star Wars Universe is a pretty low stakes interpretation, but the same logic applies to actual real science that matters. 
+As a scientist, which results are we going to stand behind? The difference in totally fictional mass between male and female humans in the Star Wars Universe is a pretty low stakes interpretation, but the same logic applies to actual real science that matters.
 
 2-tailed tests are generally recommended as the standard choice. They are more conservative (less likely to support a result that doesn't really exist) and allow for the possibility of a difference in either direction.
 
-1-tailed tests should only be used when 1) you have a specific directional hypothesis *and*  2) you are completely uninterested in effects in the opposite direction. If you're not sure, stick with two-tailed tests.
+1-tailed tests should only be used when 1) you have a specific directional hypothesis *and* 2) you are completely uninterested in effects in the opposite direction. If you're not sure, stick with two-tailed tests.
 
 That said, don't avoid one-tailed tests in the name of "conservatism." It's not p-hacking to use a one-tailed test when you have a good reason to do so, it's just using statistics effectively to answer the specific question you have.
 
@@ -296,21 +296,20 @@ That said, don't avoid one-tailed tests in the name of "conservatism." It's not 
 
 Important optional arguments for $t$-tests:
 
-- True mean ($\mu$): `mu`
-  - In a 1-sample test, the null hypothesis will compare the mean to 0 by default. You can change this to the "true mean".
-- Alt hypothesis: `alternative = c("two.sided", "less", "greater")`
-  - By default this tests that the 1-var mean is not equal to 0 (or $\mu$) or that the 2-vars means are not equal to each other. If you are specifically looking to demonstrate that the mean is greater than or less than 0 (or $\mu$) or that one particular group's mean is greater than the others (e.g., you expect the control group to have poorer outcomes than the treatment/intervention group), set this to `less` or `greater`.
-- Paired: `paired = FALSE`
-  - If the observations are related in some way, you can use a paired $t$-test. For example if you want to compare growth between pre-test and post-test, you're more interested in the change for each individual rather than either mean test score *per se*.
-- Confidence level: `conf.level = 0.95`
-  - Set an alternative confidence interval when comparing means. This is rarely changed; 95% is almost always the expectation here.
-    
+-   True mean ($\mu$): `mu`
+    -   In a 1-sample test, the null hypothesis will compare the mean to 0 by default. You can change this to the "true mean".
+-   Alt hypothesis: `alternative = c("two.sided", "less", "greater")`
+    -   By default this tests that the 1-var mean is not equal to 0 (or $\mu$) or that the 2-vars means are not equal to each other. If you are specifically looking to demonstrate that the mean is greater than or less than 0 (or $\mu$) or that one particular group's mean is greater than the others (e.g., you expect the control group to have poorer outcomes than the treatment/intervention group), set this to `less` or `greater`.
+-   Paired: `paired = FALSE`
+    -   If the observations are related in some way, you can use a paired $t$-test. For example if you want to compare growth between pre-test and post-test, you're more interested in the change for each individual rather than either mean test score *per se*.
+-   Confidence level: `conf.level = 0.95`
+    -   Set an alternative confidence interval when comparing means. This is rarely changed; 95% is almost always the expectation here.
 
 ### ANOVA
 
 Think of an Analysis of Variance (ANOVA) as an extension of the $t$-test. With a $t$-test you can compare the mean of 1 group to a static value or the means of 2 groups to each other. The basic functionality of ANOVA is to allow you compare three or more groups.
 
-ANOVA is a whole family of analyses, but we'll focus on just 1-way ANOVA and 2-way ANOVA. One-way ANOVA is appropriate when there is one categorical independent variable with multiple levels, while two-way ANOVA is used when there are two categorical independent variables and their interaction effect needs to be examined. 
+ANOVA is a whole family of analyses, but we'll focus on just 1-way ANOVA and 2-way ANOVA. One-way ANOVA is appropriate when there is one categorical independent variable with multiple levels, while two-way ANOVA is used when there are two categorical independent variables and their interaction effect needs to be examined.
 
 Start by messing with the SW dataset to get it into a form that's useful for ANOVA.
 
@@ -353,12 +352,11 @@ sw.hyp <- starwars %>%
   filter(name != "Jabba Desilijic Tiure")
 ```
 
-
 #### 1-Way ANOVA
 
 > **Applied Example:** A psychologist wants to compare the effectiveness of three different stress reduction techniques (e.g., mindfulness meditation, progressive muscle relaxation, and deep breathing exercises) on reducing anxiety levels among participants.
 
-One-way ANOVA can be used to test for significant differences in anxiety levels (dependent variable, continuous) across the three stress reduction techniques (independent variable, factor). 
+One-way ANOVA can be used to test for significant differences in anxiety levels (dependent variable, continuous) across the three stress reduction techniques (independent variable, factor).
 
 If the $p$-value from the ANOVA test is significant, post-hoc tests (e.g., Tukey's HSD) can be conducted to determine which techniques differ significantly from each other.
 
@@ -375,7 +373,7 @@ TukeyHSD(anova_sex3)
 
 Here there is a trending but non-significant difference in height across the 3 sex categories $F$() = `r round(summary(anova_sex3)[[1]]$F[1],3)`, $p$ = `r round(summary(anova_sex3)[[1]]$P[1],3)`.
 
-Using Tukey post-hoc adjustment we can see this difference is primarily driven by the difference in height between those in the "male" and "other" category. 
+Using Tukey post-hoc adjustment we can see this difference is primarily driven by the difference in height between those in the "male" and "other" category.
 
 #### 2-Way ANOVA
 
@@ -454,23 +452,19 @@ The order of the models in the `anova()` function matters. The output compares e
 
 How should you order them? Typically, you start with the simplest model and go in order of complexity. When "complexity" is hard to compare, you can use theoretical motivation to order them. For example, if two models are the same except they test different interaction effects, ask which interaction effect you think it most likely to actually exist (or be stronger). The more likely you think it is, the later you should test it so you can detect improvement model to model.
 
-
-
-### Chi-square 
+### Chi-square
 
 The Chi-Square Test is used to determine whether there is a significant association between categorical variables. It tests for "independence" (the null hypothesis), where there is no association. You can think of it like a kind of "correlation" between categorical data.
 
->**Applied Example:** A psychologist conducting research on the effectiveness of different therapy interventions for treating phobias wants to examine whether there is a significant association between the type of therapy (exposure therapy, cognitive-behavioral therapy, or relaxation therapy) and the self-reported effectiveness (reduction of symptoms, increase in symptoms, or no change). 
+> **Applied Example:** A psychologist conducting research on the effectiveness of different therapy interventions for treating phobias wants to examine whether there is a significant association between the type of therapy (exposure therapy, cognitive-behavioral therapy, or relaxation therapy) and the self-reported effectiveness (reduction of symptoms, increase in symptoms, or no change).
 
 In this scenario, there are two categorical variables (therapy type & symptom change). The experimental design allows for a directional association: sensibly, therapy type is the predictor variable and symptom change is the outcome variable. The null hypothesis of a Chi-sq. test is that there is no association between the two variables. That is, a subject in any of the three therapy groups is equally likely to fall into any of the three outcome groups.
 
 Chi-sq. tests are useful outside of experimental designs as well:
 
->**Applied Example:** A psychologist conducting research on pre-school readiness wants to know if there is an association between parent education level (no college, college, graduate) and child's reading level (below average, average, above average).
+> **Applied Example:** A psychologist conducting research on pre-school readiness wants to know if there is an association between parent education level (no college, college, graduate) and child's reading level (below average, average, above average).
 
 In this scenario, the psychologist is not manipulating the parent's education level, but there is still directionality. Since parents have already achieved their education level at the time of measuring child reading level, it would be impossible for the child's reading level to affect the parent's education level. Although we cannot say with certainty that a significant association between parent education level and child reading level is causal, we can design the study and models to infer high likelihood of causality (assuming there was in fact an association).
-
-
 
 Like with correlation of continuous variables, directionality isn't required. Amount of time spent outside and amount of time spent with family may be positively correlated, but it's not clear which would cause the other (if either). There may be a significant association between favorite ice cream flavor and favorite candy flavor, but it's not clear that one of those is the independent predictor and the other the dependent outcome.
 
@@ -522,13 +516,13 @@ skin_hair_chi2 <- chisq.test(skin_hair_table)
 skin_hair_chi2
 ```
 
+```{=html}
 <!-- Note that sometimes in this document whenever I need to include a $p$-value of <.001 in the narrative text I write that out explicitly rather than using a code-reference. That's because if I pulled out the real $p$-value and rounded it, it would usually render as "p<.000", which is not what I want. 
 
 The `papaja` package has a function `apa_p()` that will render a $p$-value according to APA formatting, including rounding and selecting the right equality/comparison operator. You need to add the argument `add_equals=TRUE` to get the `=` or `<` to show up. You can also write your own function for this if you don't want to add in the argument every time or if papaja is giving you problems. -->
-
+```
 
 In this case, $\chi^2$ = `r skin_hair_chi2$statistic[[1]]` ($p$ `r papaja::apa_p(skin_hair_chi2$p.value, add_equals=T)`). We can reject the null hypothesis and claim that there is an association between hair and skin color in characters in the Star Wars Universe. We cannot make any claims about direction of the association.
-
 
 ## Continuous Predictors
 
@@ -536,11 +530,11 @@ In this case, $\chi^2$ = `r skin_hair_chi2$statistic[[1]]` ($p$ `r papaja::apa_p
 
 Linear regression models the relationship between a continuous dependent variable and one or more (i.e., multiple regression) independent variables, at least one of which is also continuous. Linear modeling can also incorporate interaction effects between predictors.
 
->**Applied Example:** A psychologist is interested in understanding the relationship between hours of study per week and exam scores among college students. Using a linear regression to model the this relationship shows 1) whether there is a relationship, 2) whether that association is statistically significant, 3) the association's direction, and 4) the magnitude of the association.
+> **Applied Example:** A psychologist is interested in understanding the relationship between hours of study per week and exam scores among college students. Using a linear regression to model the this relationship shows 1) whether there is a relationship, 2) whether that association is statistically significant, 3) the association's direction, and 4) the magnitude of the association.
 
-Since both variables in this case are continuous, the psychologist could have used a correlation instead of a regression. One advantage of the regression is that the magnitude of the effect has more immediate application. Correlation is always normed to be between 0 and 1, so the magnitude of the correlation coefficient can be interpreted as a kind of percentage change. 
+Since both variables in this case are continuous, the psychologist could have used a correlation instead of a regression. One advantage of the regression is that the magnitude of the effect has more immediate application. Correlation is always normed to be between 0 and 1, so the magnitude of the correlation coefficient can be interpreted as a kind of percentage change.
 
-With regression, the slope (magnitude) is not normed and applies directly to the variables. It can be interpreted as change-in-outcome per change-in-predictor, i.e. the expected change (probably increase?) in exam score for every additional hour of studying. Without norming, the regression will also give an intercept, which tells you what the predicted value of $y$ would be if $x=0$ (i.e., the expected exam score for someone who did not study at all). 
+With regression, the slope (magnitude) is not normed and applies directly to the variables. It can be interpreted as change-in-outcome per change-in-predictor, i.e. the expected change (probably increase?) in exam score for every additional hour of studying. Without norming, the regression will also give an intercept, which tells you what the predicted value of $y$ would be if $x=0$ (i.e., the expected exam score for someone who did not study at all).
 
 Another advantage of linear models is the opportunity to consider multiple predictor variables. Additional independent variables may be variables of interest (maybe both study hours and sleep hours affect exam scores) or one may be a control (maybe the effect of study hours differs based on students' pre-test scores).
 
@@ -568,11 +562,10 @@ The linear model shows that for every additional unit of height (cm), mass incre
 
 One clear way to see that this very simple regression is doing basically the same thing as the correlation is comparing the $p$-values of the `cor.test` and of the `height` slope. You can find these in the output, or extract them from the objects:
 
-- Correlation: $p$ = `r mass_height_corr$p.value`
-- Regression: $p$ = `r summary_mass_height_lm$coefficients[2,4]`
+-   Correlation: $p$ = `r mass_height_corr$p.value`
+-   Regression: $p$ = `r summary_mass_height_lm$coefficients[2,4]`
 
-
-The lm also gives an intercept, which in this case is a fantastic example of when the intercept is simply not a useful thing to interpret: what should we expect the mass of a 0cm being to be? Apparently `r coefficients(mass_height_lm)[["(Intercept)"]]`, which is nonsensical. First of all, mass cannot be negative, but that could potentially just be the result of a bad model fit. More clearly, a being cannot exist with literally 0 height. If a real observation's predictor measurement *can literally never be 0*, the intercept does not have a meaningful interpretation. It's still important for the model's overall functionality and fit, but only the slope will go into our interpretation of the results. 
+The lm also gives an intercept, which in this case is a fantastic example of when the intercept is simply not a useful thing to interpret: what should we expect the mass of a 0cm being to be? Apparently `r coefficients(mass_height_lm)[["(Intercept)"]]`, which is nonsensical. First of all, mass cannot be negative, but that could potentially just be the result of a bad model fit. More clearly, a being cannot exist with literally 0 height. If a real observation's predictor measurement *can literally never be 0*, the intercept does not have a meaningful interpretation. It's still important for the model's overall functionality and fit, but only the slope will go into our interpretation of the results.
 
 **Be careful: the intercept will have its own significance value!** It's almost always the significance of the *slope* that matters, so don't get excited when you see `***` on the intercept line of the model output.
 
@@ -590,7 +583,7 @@ ggplot(sw.hyp, aes(x=height, y=mass)) +
   
 ```
 
-Multiple regression works exactly the same way. Add predictor or control variables to the right side of the formula. Connect them with an asterisk to look for an interaction effect. 
+Multiple regression works exactly the same way. Add predictor or control variables to the right side of the formula. Connect them with an asterisk to look for an interaction effect.
 
 Using the `mtcars` dataset, (how) do horsepower and displacement predict fuel efficiency (miles per gallon)?
 
@@ -616,13 +609,13 @@ summary(cars_inter)
 
 ```
 
-<!-- In this section I use the coefficients() or coef() (same exact thing) function to extract slope. This function makes it very easy to reference the intercept and slope of a linear regression. --> 
+<!-- In this section I use the coefficients() or coef() (same exact thing) function to extract slope. This function makes it very easy to reference the intercept and slope of a linear regression. -->
 
-In Model 1, which includes just one independent variable (`mpg ~ hp`), horsepower is negatively associated with fuel efficiency ($\beta$ = `r round(coefficients(cars_hp)[["hp"]], 3)`, $p$ < .001). That is, for every additional unit of horsepower we expect a reduction of `r -1*round(coefficients(cars_hp)[["hp"]], 3)` mpg.
+In Model 1, which includes just one independent variable (`mpg ~ hp`), horsepower is negatively associated with fuel efficiency ($\beta$ = `r round(coefficients(cars_hp)[["hp"]], 3)`, $p$ \< .001). That is, for every additional unit of horsepower we expect a reduction of `r -1*round(coefficients(cars_hp)[["hp"]], 3)` mpg.
 
 <!-- In this section I am using a different method to reference the coefficients and $p$-values from the model. The `tidy()` function in the `broom` package will produce a simple table to quickly reference the most commonly needed values from (most) models. I also use the apa_p() function from papaja. -->
 
-Model 2 includes a second (continuous) predictor variable: displacement. In this regression, displacement ($\beta$ = `r round(tidy(cars_hp_disp)[[3, "estimate"]] , 3)`, $p$ `r apa_p( tidy(cars_hp_disp)[[3, "p.value"]] )`) is a better predictor of mpg than horsepower, which in fact is no longer even significant ($\beta$ = `r round(tidy(cars_hp_disp)[[3, "estimate"]] , 3)`, $p$ < `r apa_p( tidy(cars_hp_disp)[[2, "p.value"]] , add_equals = T)`).
+Model 2 includes a second (continuous) predictor variable: displacement. In this regression, displacement ($\beta$ = `r round(tidy(cars_hp_disp)[[3, "estimate"]] , 3)`, $p$ `r apa_p( tidy(cars_hp_disp)[[3, "p.value"]] )`) is a better predictor of mpg than horsepower, which in fact is no longer even significant ($\beta$ = `r round(tidy(cars_hp_disp)[[3, "estimate"]] , 3)`, $p$ \< `r apa_p( tidy(cars_hp_disp)[[2, "p.value"]] , add_equals = T)`).
 
 Model 3 adds a potential interaction effect between horsepower and displacement. In this example, an interaction would mean that the strength of the effect on mpg of horsepower changes across changing levels of displacement. (As a simple psychology example, we might be interested in the interaction of age and sleep deprivation on exam scores. Sleep deprivation will probably lower exam scores for everyone, but it might lower them *a lot* for younger kids and just a little for older kids or vice versa). In this model, both horsepower and displacement have a significant effect on mpg, *and* there is a significant interaction effect ($\beta$ = `r round(tidy(cars_inter)[[4, "estimate"]] , 3)`, $p$ `r apa_p( tidy(cars_inter)[[4, "p.value"]] )`). The effect of displacement on mpg gets stronger as horsepower increases, above and beyond overall effects of displacement and horsepower.
 
@@ -648,7 +641,6 @@ Visualizing relationships between more than two continuous variables gets very c
 
 If you only have one continuous independent variable (the others are categorical or logical), you can use grouping strategies. @fig-viz-mult-reg-one-cont demonstrates this approach to show the effects of horsepower, transmission type (`am`), and engine type (`vs`) on fuel efficiency using color grouping and faceting.
 
-
 ```{r }
 #| label: fig-viz-mult-reg-one-cont
 #| fig-cap: MPG by HP, across engine and transmission type
@@ -665,7 +657,6 @@ mtcars %>%
 
 ```
 
-
 With multiple continuous predictors, you can use color, transparency, size, etc. to add another dimension without *literally* adding another dimension. @fig-viz-mult-reg-two-cont again shows horsepower's primary effect on MPG, while color adds in information about displacement.
 
 ```{r }
@@ -681,7 +672,6 @@ mtcars %>%
 
 You can go crazy with even more continuous variables, but you probably shouldn't (@fig-viz-mult-reg-four-cont).
 
-
 ```{r }
 #| label: fig-viz-mult-reg-four-cont
 #| fig-cap: "MPG by HP with 4 additional continuous variables (aka chaos)"
@@ -694,15 +684,13 @@ mtcars %>%
 
 ```
 
-
-
 ### Logistic Regression
 
 Logistic regression is a type of generalized linear modeling (GLM) used when the dependent variable is binary (two categories). It models the probability of the occurrence of an event based on one or more independent variables. You can interpret a logistic regression as the change in probability that an outcome will occur given changes in your predictors.
 
->**Applied Example:** A psychologist is interested in identifying risk factors associated with the presence of anxiety disorders among college students, such as stress levels, sleep quality, and academic performance.
+> **Applied Example:** A psychologist is interested in identifying risk factors associated with the presence of anxiety disorders among college students, such as stress levels, sleep quality, and academic performance.
 
-In this scenario, the outcome is not *how much* anxiety students experience (however you'd quantify that as a continuous variable), but simply the binary option of has-an-anxiety-disorder or doesn't-have-an-anxiety-disorder. 
+In this scenario, the outcome is not *how much* anxiety students experience (however you'd quantify that as a continuous variable), but simply the binary option of has-an-anxiety-disorder or doesn't-have-an-anxiety-disorder.
 
 Note that this is a good example of where the direction between variables is not certain. In this model, we are treating the presence of an anxiety disorder as the outcome, which implies that the independent variables of stress, sleep, and academic performance are what lead to that diagnosis. While that may be what's happening, it's also reasonable to suspect that having an anxiety disorder is actually what leads to stress, sleep disturbance, and changes in academic performance. The logistic regression is still useful even if the cause-and-effect relationship is murky at best, so long as we are cautious and transparent when interpreting the results.
 
@@ -726,7 +714,7 @@ summary(log_cars)
 
 Unsurprisingly (given what we saw with the linear models), higher horsepower makes it *less* likely that a car falls in the high efficiency category.
 
-You can visualize logistic regression with point and smooth geoms just like "regular" (Gaussian) regressions. Specify the `glm` method and set the family to `binomial` with the syntax used here to produce @fig-viz-log-reg). 
+You can visualize logistic regression with point and smooth geoms just like "regular" (Gaussian) regressions. Specify the `glm` method and set the family to `binomial` with the syntax used here to produce @fig-viz-log-reg).
 
 ```{r}
 #| label: fig-viz-log-reg
@@ -740,8 +728,7 @@ ggplot(mt2, aes(x = hp, y = highMPG)) +
   labs(y = "MPG Category likelihood")
 ```
 
-
-Notice that the y-axis goes from 0 to 1 (0% likely to be high-MPG to 100% likely to be high-MPG), and that all values fall either on $y=0$ or $y=1$. 
+Notice that the y-axis goes from 0 to 1 (0% likely to be high-MPG to 100% likely to be high-MPG), and that all values fall either on $y=0$ or $y=1$.
 
 Alternatively, you could modify the y-axis labels to more clearly communicate what the two categories are (@fig-viz-log-reg-alt). Neither is necessarily better, but the second might be more intuitive to someone who doesn't know what a logistic regression is, or if the 2 levels in the category don't have an inherent order.
 
@@ -758,14 +745,11 @@ ggplot(mt2, aes(x = hp, y = highMPG)) +
   labs(y = "MPG Category likelihood")
 ```
 
-
 # More
 
-- Poisson GLM (GLM with `family=poisson`)
-  - used for count/frequency data
-  - e.g., a psychologist wants to determine whether each of 3 intervention options decreases the number of times symptomatic behaviors are used in an observation period
-- Generalized Linear Mixed-Effects Models (GLMM)
-  - used for nested or hierarchical data, where you need to account for random or spillover effects
-  - e.g., a psychologist want to determine the effectiveness of a teaching intervention. the intervention is administered at classroom level, but measured at the student level. the psychologist includes School ID as a random effect because they expect students will perform similarly to other students in their own school based on many factors unrelated to the intervention
-
-
+-   Poisson GLM (GLM with `family=poisson`)
+    -   used for count/frequency data
+    -   e.g., a psychologist wants to determine whether each of 3 intervention options decreases the number of times symptomatic behaviors are used in an observation period
+-   Generalized Linear Mixed-Effects Models (GLMM)
+    -   used for nested or hierarchical data, where you need to account for random or spillover effects
+    -   e.g., a psychologist want to determine the effectiveness of a teaching intervention. the intervention is administered at classroom level, but measured at the student level. the psychologist includes School ID as a random effect because they expect students will perform similarly to other students in their own school based on many factors unrelated to the intervention

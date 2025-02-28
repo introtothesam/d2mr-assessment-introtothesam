@@ -28,7 +28,6 @@ set.seed(5678)
 
 Run this chunk to see what your end product should look like.
 
-
 ```{r}
 
 #| label: load-goal-tibble
@@ -51,61 +50,91 @@ Start by saving the `gapminder` dataset to a new tbl called `gm.wrangled`. You w
 #| label: load-starting-data
 
 # create gm.wrangled
+write_csv(gapminder, "gapminder.csv")
 
+gm.wrangled <- read_csv("gapminder.csv", 
+    col_types = "ccdddd")
+
+# Check structure
+glimpse(gm.wrangled)
 
 ```
 
+## Comparison of 'all.equal()' and 'diff_data()'
 
 Before you start making changes to the `gm.wrangled` dataset, identify the differences between the `gm.wrangled` and `gm.wrangled.goal` datasets. There are multiple ways to do this, including the `all.equal()` function and the `diff_data()` function from the `daff` package. In this case, I recommend trying out both. Think about what the advantages and disadvantages of each are. Which is easier for you to understand? Which is more sensitive? Which guides you to focus on meaningful differences?
+
+'all.equal()' 1. Advantages: Very sensitive to any difference, display data type and structure issues, 2. Disadvantages: Do not show exact values that differ
+
+'diff_data()' 1. Advantages: Show specific cell-level differences, check data content, track changes row-by-row 2. Disadvantages: Do not highlight structural differences
 
 ```{r}
 #| label: compare-datasets
 
 # Compare datasets using all.equal(), diff_data(), or another method of your choice
+all.equal(gm.wrangled, gm.wrangled.goal)
 
+diff_data(gm.wrangled, gm.wrangled.goal)
+
+# Visualize the differences between two data frames
+render_diff(diff_data(gm.wrangled, gm.wrangled.goal))
 
 ```
 
+### Notes on comparisons
 
-
-### Notes on comparisons 
-
-The `all.equal()` function is extremely sensitive. It may identify differences in object attributes that are not actually problematic. You may need to do some manual inspection to determine if the differences are significant. The `diff_data()` function is more focused on the data itself, but it may not be as sensitive to differences in object attributes, which can be a strength or weakness. You'll have to decide. 
+The `all.equal()` function is extremely sensitive. It may identify differences in object attributes that are not actually problematic. You may need to do some manual inspection to determine if the differences are significant. The `diff_data()` function is more focused on the data itself, but it may not be as sensitive to differences in object attributes, which can be a strength or weakness. You'll have to decide.
 
 There are actually a few places where the goal dataset isn't ideal. You may want to consider whether you should try to match the goal dataset exactly or if you want to (deliberately and with clear explanation!) deviate from it in some ways. (Hint: there are at least a few improvements you could make regarding data types, and factors specifically.)
 
-
-
-## Make a Plan 
+## Make a Plan
 
 Create a plan to address the differences between the `gm.wrangled` and `gm.wrangled.goal` datasets. What changes do you need to make? What functions will you use to make these changes?
 
-  1. List
-  2. your
-  3. steps
-  4. here
-  5. etc...
-  
+1. Identify missing columns and values
+    -   Functions used: `setdiff()`, `summarise_all()`, `is.na()`, `if_else_`
+    -   Check which columns exist in the goal dataset but not in the starting dataset.
+    -   Identify if there are any missing values to handle.
+2. Rename columns and creat missing columns Functions
+    -   Functions used: `rename()`, `mutate()`, `str_sub()`, `str_to_upper()`, 'as.integer()`,
+    -   `paste0()`, `case_when()`, `factor()`, `str_length()`
+    -   By the sequence of the mismatched columns detected by the first step
+3. Reorder columns
+    -   Function used: `select(all_of(...))`
+4. Manipulate factor levels and filter rows
+    -   Functions used: `mutate()`, `fct_relevel()`, `filter()`, `arrange()`, `desc()`, `case_when()`
+    -   Convert country to character
+    -   Rename continent "Region"
+    -   Filter to keep only years: 1992, 1997, 2002, 2007
+    -   Arrange rows by continent, then year, then descending life_expectancy
+5. Group calculation
+    -   Functions used: `group_by()`, `mutate()`, `sum()`, `n()`, `dense_rank()`, `ungroup()`
+    -   Calculate columns: continent_avg_life_exp, relative_life_expectancy, population_avg_life_exp
+6. Complex column operation - is_populous
+    -   Functions used: `arrange()`, `slice()`, `pull()`, `mutate()`
+    -   Determine how to classify is_populous
+7. Final touches
+8. Final verification and debugging
+
 ### Suggested functions
 
 If you need help getting started, consider using the following functions in your transformation pipeline:
 
-- `mutate()`, `across()`
-- `group_by()`, `ungroup()`, `filter()`, `arrange()`
-- `separate_wider_delim()`
-- `str_to_upper()`, `str_detect()`, `str_replace()`, `str_sub()`, `str_length()`
-- `select()`, `rename()`, `relocate()`
-- `replace_na()`
-- `factor()`, `fct_relevel()`, `fct_recode()`
-- `min_rank()`, `dense_rank()`, `row_number()`
-- `case_when()`, `if_else()`
+-   `mutate()`, `across()`
+-   `group_by()`, `ungroup()`, `filter()`, `arrange()`
+-   `separate_wider_delim()`
+-   `str_to_upper()`, `str_detect()`, `str_replace()`, `str_sub()`, `str_length()`
+-   `select()`, `rename()`, `relocate()`
+-   `replace_na()`
+-   `factor()`, `fct_relevel()`, `fct_recode()`
+-   `min_rank()`, `dense_rank()`, `row_number()`
+-   `case_when()`, `if_else()`
 
-This list is neither exhaustive nor prescriptive. You can use any other functions you find helpful, and you don't need to use all of these functions to complete the assignment. Bear in mind that in order to meet course objectives, you should prioritize using tidyverse functions when possible. 
+This list is neither exhaustive nor prescriptive. You can use any other functions you find helpful, and you don't need to use all of these functions to complete the assignment. Bear in mind that in order to meet course objectives, you should prioritize using tidyverse functions when possible.
 
 ### Derived variables
 
 You'll create multiple derived variables during this process. Many of them are not obvious; you'll need to puzzle some of them out. Think about what kind of information would be useful to have in the dataset and create variables that provide that information. If you don't quite understand a variable conceptually, you can try to reverse-engineer it from the data. If you're really stuck, that's ok. Add whatever code you can to get as close as possible, then add placeholder comments that describe what you think you're still missing.
-
 
 # Transformation Challenges
 
@@ -120,11 +149,110 @@ The chunk(s) in this category may include things like selecting and renaming col
 ```{r}
 
 #| label: initial-manipulation
+#| label: columns selection 
+#| label: find mismatched columns and missing values
 
-# Data Selection and Initial Manipulation
+# Data Selection
+
+# Identify missing columns and select only relevant ones
+mismatched_cols <- setdiff(names(gm.wrangled.goal), names(gm.wrangled))
+
+# Print mismatched columns
+print(mismatched_cols)
+
+# Check missing values
+missing_values <- gm.wrangled %>%
+  summarise_all(~ sum(is.na(.)))
+
+# Print missing values only if there are missing values
+if (sum(missing_values) > 0) {
+  cat("\nMissing Value Summary:\n")
+  print(missing_values)
+} else {
+  cat("\nNo missing values found in the dataset.\n")
+}
 
 ```
 
+```{r}
+#| label: columns renaming and handling missing columns
+
+gm.wrangled <- gm.wrangled %>%
+  
+  # [1] "country_abbrev"
+  # Create country_abbrev using first 3 letters of country name (uppercase)
+  mutate(country_abbrev = str_to_upper(str_sub(country, 1, 3))) %>%
+
+  # [2] "population"
+  # Rename `pop` to `population` and convert to integer
+  rename(population = pop) %>%  
+  mutate(population = as.integer(population)) %>%  
+
+  # [3] "population_millions"
+  # Create `population_millions` (convert to millions) and concatenate with "mil."
+  mutate(population_millions = paste0(round(population / 1e6, 2), " mil.")) %>%
+  
+  # [4] "gdp_per_capita"
+  # Rename `gdpPercap` to `gdp_per_capita`
+  rename(gdp_per_capita = gdpPercap) %>%
+
+  # [5] "life_expectancy" 
+  # Rename `lifeExp` to `life_expectancy`
+  rename(life_expectancy = lifeExp) %>%
+
+  # [6] "development_status"
+  # Based on the goal dataset's apparent classification:
+  # High Income: gdp_per_capita >= 20000
+  # Middle Income: 5000 <= gdp_per_capita < 20000
+  # Low Income: gdp_per_capita < 5000
+  
+  mutate(
+    development_status = case_when(
+      gdp_per_capita >= 20000 ~ "High Income",
+      gdp_per_capita >= 5000 & gdp_per_capita < 20000 ~ "Middle Income",
+      gdp_per_capita < 5000 ~ "Low Income"
+    ),
+    development_status = factor(development_status, 
+                                levels = c("High Income", "Middle Income", "Low Income"))
+  ) %>%
+  
+  # [7] "country_length"
+  # Add `country_length` (length of country name)
+  mutate(country_length = str_length(country)) %>%
+
+  # [8] "economic_score"
+  # [9] "continent_avg_life_exp"
+  # [10] "relative_life_expectancy" 
+  # [11] "population_rank_in_continent"
+  #Placeholder for future calculation and ranking  
+  mutate(
+    economic_score = as.numeric(NA),
+    continent_avg_life_exp = as.numeric(NA),  
+    relative_life_expectancy = as.numeric(NA),  
+    population_rank_in_continent = as.integer(NA)  
+  ) %>%
+
+  # [12] "is_rich"
+  # Create `is_rich` 
+  mutate(is_rich = as.logical(development_status == "High Income")) %>%
+  
+  # [13] "is_populous"
+  # Create `is_populous` placeholder
+  mutate(is_populous = as.logical(NA)) 
+
+glimpse(gm.wrangled)
+
+```
+
+```{r}
+#| label: reorder the columns and check if the column names are the same
+
+gm.wrangled <- gm.wrangled %>%
+  select(all_of(names(gm.wrangled.goal)))
+
+all.equal(names(gm.wrangled), names(gm.wrangled.goal))
+
+```
 
 ## Factor Manipulation
 
@@ -135,10 +263,38 @@ The chunk(s) in this category may include things like releveling factor variable
 #| label: factor-manipulation
 
 # Factor Manipulation
-
+gm.wrangled <- gm.wrangled %>%
   
-```
+  # Convert `country` to character 
+  mutate(country = as.character(country)) %>%
 
+  # Add "Region" to each continent
+  mutate(continent = case_when(
+    continent == "Asia" ~ "Asian Region",
+    continent == "Europe" ~ "European Region",
+    continent == "Africa" ~ "African Region",
+    continent == "Americas" ~ "Americas Region",
+    continent == "Oceania" ~ "Oceania Region",
+    TRUE ~ as.character(continent) 
+  )) %>%
+  
+  # Keep only data for selected years
+  filter(year %in% c(1992, 1997, 2002, 2007)) %>%
+
+  # Convert `continent` to an ordered factor
+  mutate(
+    continent = fct_relevel(
+      continent, "Asian Region", "European Region", "African Region", "Americas Region", "Oceania Region"
+    )
+  ) %>%
+
+  # Reorder rows based on `continent` and `year`
+  arrange(continent, year, desc(life_expectancy))
+
+# Check dataset structure
+diff_data(gm.wrangled, gm.wrangled.goal)
+
+```
 
 ## String and Numeric Transformations
 
@@ -150,7 +306,31 @@ The chunk(s) in this category may include things like text manipulation, creatin
 
 # String and Numeric Transformations
 
+gm.wrangled <- gm.wrangled %>%
+  
+  # [8] "economic_score"
+  # Compute `economic_score` as (GDP per capita * Life Expectancy) / 10
+  mutate(economic_score = round((gdp_per_capita * life_expectancy) / 10, 4)) %>%
+  
+  # [9] "continent_avg_life_exp"
+  # [10] "relative_life_expectancy" 
+  # [11] "population_rank_in_continent"
+  
+  # Compute `continent_avg_life_exp` by taking the simple mean of life expectancy per continent and development status
+  group_by(continent, development_status) %>%
+  mutate(
+    continent_avg_life_exp = sum(life_expectancy, na.rm = TRUE) / n(),  # SUM life_expectancy / COUNT of countries
+    
+    # Compute relative life expectancy
+    relative_life_expectancy = life_expectancy / continent_avg_life_exp,  
+    
+    # Rank population within continent-year
+    population_rank_in_continent = dense_rank(desc(population))  
+  ) %>%
+  ungroup()  # Ensure ungrouping before further transformations
 
+# Check the structure of transformed dataset
+glimpse(gm.wrangled)
 
 ```
 
@@ -164,6 +344,34 @@ The chunk(s) in this category may include things like generating new columns bas
 
 # Complex Column Operations
 
+# "is_populous"
+# Assign based on the lexicographic ranking （alphabetical order) of "population_millions" (character column)
+# "is_populous" is TRUE for values ranked before "5.88 mil." and FALSE for "5.88 mil." and beyond 
+# The first approach I tried is setting a threshould/cutoff at "5.88 mil." 
+
+# gm.wrangled <- gm.wrangled %>%
+#  mutate(
+#    is_populous = population_millions > "5.88 mil."
+#  )
+
+# This approach works but I'm wondering what the comparison logic is
+# If population_millions > threshold_value, is_populous = TRUE
+# If population_millions <= threshold_value, is_populous = FALSE
+# Dynamically selects the threshold
+
+# Which row will serve as the threshold for categorization?
+top_n <- round(nrow(gm.wrangled) * 0.767)  # Try different thresholds
+
+# Sort the dataset based on the character-based order of "population_millions"
+# Extract the top_n-th row after sorting 
+threshold_value <- gm.wrangled %>%
+  arrange(population_millions) %>%
+  slice(top_n) %>%
+  pull(population_millions)
+
+gm.wrangled <- gm.wrangled %>%
+  mutate(is_populous = population_millions > threshold_value)
+
 ```
 
 ## Final Touches
@@ -176,6 +384,20 @@ The chunk(s) in this category may include things like final column reordering, s
 
 # Final Touches
 
+# Ensure the column name match
+colnames(gm.wrangled) <- colnames(gm.wrangled.goal)
+
+# El Salvador (country_abbrev)
+gm.wrangled <- gm.wrangled %>%
+  mutate(country_abbrev = case_when(
+    country == "El Salvador" ~ "ELS",
+    TRUE ~ country_abbrev
+  ))
+
+# Check structure 
+str(gm.wrangled)  
+str(gm.wrangled.goal)  
+
 ```
 
 # Checkpoint: compare dataframes
@@ -183,42 +405,124 @@ The chunk(s) in this category may include things like final column reordering, s
 Check whether your `gm.wrangled` dataframe is identical to the goal dataframe. Like before, you can use `all_equal()`, `diff_data()`, or another method of your choice.
 
 ```{r}
-
 #| label: compare-dataframes-again
+#| label: first checkpoint
 
 # Compare dataframes again
+all.equal(gm.wrangled, gm.wrangled.goal)
+diff_data(gm.wrangled, gm.wrangled.goal)
+```
+
+```{r}
+#| label: check differences detected by all.equal
+#| 
+# [1] "Attributes: < Names: 1 string mismatch >"
+# All TRUE: no differences in actual column names, mismatch is in metadata attributes 
+# Extra pieces of information in gm.wrangled.goal 
+names(gm.wrangled) == names(gm.wrangled.goal)
+
+# [2] "Attributes: < Length mismatch: comparison on first 2 components >"
+# gm.wrangled.goal has extra two metadata attributes
+length(attributes(gm.wrangled))
+length(attributes(gm.wrangled.goal))
+
+# [3] "Attributes: < Component “class”: Lengths (3, 4) differ (string compare on first 3) >"
+# [4] "Attributes: < Component “class”: 3 string mismatches >"  
+# Compare the whole attributes for these two datasets
+# gm.wrangled.goal has $spec and $problems attibutes
+attributes(gm.wrangled)
+attributes(gm.wrangled.goal)
+
+# [5] "Attributes: < Component 2: Modes: numeric, externalptr >"
+# Bothe are stroed as list, no mode mismatch found
+mode(gm.wrangled)
+mode(gm.wrangled.goal)
+
+# [6] "Attributes: < Component 2: Lengths: 568, 1 >" 
+# Structure check
+# Key Differences:
+# 1. Class mismath: "spec_tbl_df"
+# 2. Extra attributes: $ spec,  $ problems :<externalptr> 
+str(attributes(gm.wrangled))
+str(attributes(gm.wrangled.goal))
+
+```
+
+```{r}
+#| label: debugging for differences 
+#| label: second checkpoint
+# [1] "tbl_df"     "tbl"        "data.frame"
+# [1] "spec_tbl_df" "tbl_df"      "tbl"         "data.frame" 
+# Try convert both dataset into tibble "tbl_df"
+gm.wrangled <- as_tibble(gm.wrangled)
+gm.wrangled.goal <- as_tibble(gm.wrangled.goal)
+
+class(gm.wrangled)
+class(gm.wrangled.goal)
+
+all.equal(gm.wrangled, gm.wrangled.goal)
+diff_data(gm.wrangled, gm.wrangled.goal)
 
 ```
 
 **QUESTION:** What differences remain between your `gm.wrangled` and `gm.wrangled.goal` datasets?
 
-  1. Are there any differences you tried to solve but weren't able to? How far did you get? What do you think you're missing?
-  2. Are there any differences that the `all.equal()` or `diff_data()` functions identified that you don't think are significant? What are they and what do they mean? Why do you believe they are non-essential?
-  
-<!-- Answer below -->
+1.  Are there any differences you tried to solve but weren't able to? How far did you get? What do you think you're missing?
+2.  Are there any differences that the `all.equal()` or `diff_data()` functions identified that you don't think are significant? What are they and what do they mean? Why do you believe they are non-essential?
 
+Since all.equal(gm.wrangled, gm.wrangled.goal) returns TRUE, there are no meaningful differences in the dataset structure and values.
+For Daff comparison, the output also does not indicate any differences. If there are actual differences in those columns, it will show a detailed diff table with indicators of added, removed, or changed cells.
 
+Initially, there were differences reported by all.equal() related to attributes rather than actual data values:
+1. A class mismatch: "gm.wrangled.goal" was a "spec_tbl_df", while "gm.wrangled" was a simpler "tbl_df".
+2. Extra attributes in gm.wrangled.goal: $ spec, $ problems :<externalptr> 
+
+These differences were the attribute-level and class-level differences, which did not affect the actual column data, rows, or values.
+Such differences may caused by how the data frame was read or stored and don’t affect calculations or final results. So I think these attribute differences were non-essential to the dataset’s structure or content.
+
+I addressed these differences by converting both data frames to a plain tibble via as_tibble(). After doing so, all.equal() indicated that the data frames were identical in both structure and data values. There were no unresolved differences left. Once both data frames were converted to plain tibbles, all.equal() returned TRUE, confirming no meaningful data differences remained. Therefore, I ultimately was able to solve the differences and ended up with fully matching datasets. I don’t think I’m missing anything at this point.
 
 # OPTIONAL: Unguided cleaning and transformation
 
-*Optional:* If you have the time and interest, continue transforming this dataset as you please in a new dataframe called `gm.optional`. **DO NOT SAVE OVER YOUR `gm.wrangled` DATAFRAME.** Create new columns based on the existing ones, reformat strings, try your hand at a regex replacement, summarize by groups (factor levels), visualize a simple relationship, or anything else you can think of. You can do this in addition to or instead of the additional cleaning tasks above. 
+*Optional:* If you have the time and interest, continue transforming this dataset as you please in a new dataframe called `gm.optional`. **DO NOT SAVE OVER YOUR `gm.wrangled` DATAFRAME.** Create new columns based on the existing ones, reformat strings, try your hand at a regex replacement, summarize by groups (factor levels), visualize a simple relationship, or anything else you can think of. You can do this in addition to or instead of the additional cleaning tasks above.
 
-You can do these transformations one pipe/chunk or several. Either way, include appropriate chunk labels as well as comments to explain your thought process and the steps you are taking. 
-Beyond random transforms, try creating an additional transformation pipeline that generates insights about global trends, potentially involving:
+You can do these transformations one pipe/chunk or several. Either way, include appropriate chunk labels as well as comments to explain your thought process and the steps you are taking. Beyond random transforms, try creating an additional transformation pipeline that generates insights about global trends, potentially involving:
 
-  - Aggregating data at different levels
-  - Calculating rolling averages
-  - Creating interaction variables
-  - Implementing more complex filtering strategies
-  - Joining with other datasets (hint: figure out which columns are likely to align with other datasets you might find online)
-
+-   Aggregating data at different levels
+-   Calculating rolling averages
+-   Creating interaction variables
+-   Implementing more complex filtering strategies
+-   Joining with other datasets (hint: figure out which columns are likely to align with other datasets you might find online)
 
 ```{r}
 
-#| label: rename-me-to-something-sensible
+#| label: Create a new dataframe `gm.optional` 
+# For futher analysis, I only want to use the data for year = 2007
+gm.optional <- gm.wrangled %>%
+  filter(year == 2007)
 
-#gm.optional <- gm.wrangled
-  # your code here
+glimpse(gm.optional)
+```
+
+```{r}
+#| label: custom-summary-function
+
+# This function groups a data frame by 'grouping_var' and calculates
+# mean and sd of 'measure_var'.
+custom_summary <- function(df, grouping_var, measure_var) {
+  df %>%
+    group_by({{ grouping_var }}) %>%
+    summarize(
+      mean_value = mean({{ measure_var }}, na.rm = TRUE),
+      sd_value   = sd({{ measure_var }}, na.rm = TRUE),
+      .groups = "drop"
+    )
+}
+
+# Example usage (make sure gm.optional exists):
+summary_table <- custom_summary(gm.optional, continent, life_expectancy)
+summary_table
+
 
 ```
 
@@ -237,22 +541,20 @@ If you would like to export your dataframe(s) to a .csv file, you can use the `w
 
 ```
 
-
-
 # Submission & Assessment
 
 Before submitting, double check that your `gm.wrangled` dataframe matches the `gm.wrangled.goal` dataframe using something like `all.equal()` or `diff_data()`. Remember that in this more complex recreation assignment, you may not be able to clear 100% of the differences you identify. You should aim to get as close as possible, and then address remaining discrepancies in the section above.
 
-If you optionally chose to continue transforming, that should be a *different dataframe.* 
+If you optionally chose to continue transforming, that should be a *different dataframe.*
 
 To submit:
 
-1. Add & modify the `assessment.md` in this mini-project's directory:
-    1. Check off all objectives you believe you have demonstrated
-    2. Indicate which objectives you are meeting for the first time (if any)
-    3. Complete any relevant open-ended items
-2. Push your changes to your centralized assignment repository on GitHub. 
-3. Confirm that Dr. Dowling and your section TA are added as collaborators to your repository.
-4. Submit your work in your next open mini-project assignment by including the following information in the text box:
-    1. The title of the assignment: "Level 2 Data Wrangling: Recreate a gapminder Dataset"
-    2. A link to the **directory** for this assignment in your centralized assignment repo
+1.  Add & modify the `assessment.md` in this mini-project's directory:
+    1.  Check off all objectives you believe you have demonstrated
+    2.  Indicate which objectives you are meeting for the first time (if any)
+    3.  Complete any relevant open-ended items
+2.  Push your changes to your centralized assignment repository on GitHub.
+3.  Confirm that Dr. Dowling and your section TA are added as collaborators to your repository.
+4.  Submit your work in your next open mini-project assignment by including the following information in the text box:
+    1.  The title of the assignment: "Level 2 Data Wrangling: Recreate a gapminder Dataset"
+    2.  A link to the **directory** for this assignment in your centralized assignment repo

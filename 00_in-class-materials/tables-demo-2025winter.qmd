@@ -338,8 +338,8 @@ Finally, you can add notes or footnotes below your table with the `footnote()` f
 
 kbl(dt, align = "c",
     caption = "Add unordered (general) and ordered footnotes.") %>%
-  kable_styling(full_width = F) %>%
-  footnote(general = "Here is a general comments of the table. ",
+  kable_styling(full_width = FALSE) %>%
+  kableExtra::footnote(general = "Here is a general comments of the table. ",
            number = c("Footnote 1; ", "Footnote 2; "),
            alphabet = c("Footnote A; ", "Footnote B; "),
            symbol = c("Footnote Symbol 1; ", "Footnote Symbol 2")
@@ -448,7 +448,6 @@ stargazer(mod_1, mod_2,
           # keep only two digits
           digits = 2)
 ```
-
 
 ```{r}
 #| label: regression-results-html
