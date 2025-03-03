@@ -11,17 +11,17 @@
 
 ## Basic information
 
-Name:
+Name: Chenyi Dai
 
-CNetID:
+CNetID: cydai
 
-Section:
+Section: 2
 
-Mini-project title:
+Mini-project title: 02_data-wrangling | 02_wrangling-level-2
 
-Submission date:
+Submission date: 
 
-Project GitHub subdirectory URL:
+Project GitHub subdirectory URL: 
 
 URL or instructions to access additional materials, if needed:
 
@@ -72,8 +72,8 @@ Below each learning objective is a list of general expectations for meeting that
     1.  All scripts run and all notebooks render if the repo is cloned to another location
     2.  .gitignore comprehensively excludes unnecessary, private, and very large files and is be commeted appropriately
 
-        -   [ ] Objective attempt
-        -   [x] Unique objective attempt
+        -   [x] Objective attempt
+        -   [ ] Unique objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -82,8 +82,8 @@ Below each learning objective is a list of general expectations for meeting that
     1.  Used frequent, informative commit messages
     2.  Relies on document revisions rather than manually created new versions
 
-        -   [ ] Objective attempt
-        -   [x] Unique objective attempt
+        -   [x] Objective attempt
+        -   [ ] Unique objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -105,7 +105,7 @@ Below each learning objective is a list of general expectations for meeting that
     2. Uses multiple operators in data transformation pipelines and/or inline R code
 
         -   [ ] Objective attempt
-        -   [ ] Unique objective attempt
+        -   [x] Unique objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -190,7 +190,7 @@ Below each learning objective is a list of general expectations for meeting that
     1. Uses at least 2 unique data-mapped `aes()` arguments (e.g., color, shape, size) to group data in a plot in one or multiple plots
 
         -   [ ] Objective attempt
-        -   [ ] Unique objective attempt
+        -   [x] Unique objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -225,7 +225,7 @@ Below each learning objective is a list of general expectations for meeting that
     3. Presents results in narrative text, table, or plot
 
         -   [ ] Objective attempt
-        -   [ ] Unique objective attempt
+        -   [x] Unique objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -300,7 +300,7 @@ Below each learning objective is a list of general expectations for meeting that
     4. Organizes setup chunks sensibly
 
         -   [ ] Objective attempt
-        -   [ ] Unique objective attempt
+        -   [x] Unique objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -349,7 +349,7 @@ Below each learning objective is a list of general expectations for meeting that
     4. Includes at least 1 footnote
 
         -   [ ] Objective attempt
-        -   *[ ] Unique objective attempt
+        -   [x] Unique objective attempt
         -   [ ] Objective met
         -   Grader comments:
 

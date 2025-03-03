@@ -1,5 +1,14 @@
 ---
-title: "Level 2 Data Wrangling: Recreate a gapminder Dataset"
+title: "Gapminder Dataset Analysis"
+author: "Chenyi Dai"
+date: today
+format:
+  html: default 
+  pdf: 
+    pdf-engine: xelatex
+execute:
+  echo: false # set global chunk options: Show output only
+  warning: false # override these in individual chunks
 ---
 
 # Objective
@@ -29,7 +38,6 @@ set.seed(5678)
 Run this chunk to see what your end product should look like.
 
 ```{r}
-
 #| label: load-goal-tibble
 
 ##### DO NOT EDIT THIS CHUNK #####
@@ -41,32 +49,48 @@ gm.wrangled.goal <- read_csv("gm-wrangled-goal.csv",
 
 # View in console
 gm.wrangled.goal 
-
 ```
 
 Start by saving the `gapminder` dataset to a new tbl called `gm.wrangled`. You will then make changes to this tbl to match the goal dataset.
 
 ```{r}
+#| label: set-up-option
+
+# Set global options to control numerical output
+options(scipen = 999)  # Prevents scientific notation for large/small numbers
+options(stringsAsFactors = FALSE)  # Ensures character columns are not automatically converted to factors
+```
+
+```{r}
 #| label: load-starting-data
 
-# create gm.wrangled
+# Save dataset to CSV
 write_csv(gapminder, "gapminder.csv")
 
+# Read dataset with defined column types
+# 'ccdddd' -> 2 character columns, 4 numeric columns
 gm.wrangled <- read_csv("gapminder.csv", 
     col_types = "ccdddd")
 
 # Check structure
 glimpse(gm.wrangled)
-
 ```
 
 ## Comparison of 'all.equal()' and 'diff_data()'
 
 Before you start making changes to the `gm.wrangled` dataset, identify the differences between the `gm.wrangled` and `gm.wrangled.goal` datasets. There are multiple ways to do this, including the `all.equal()` function and the `diff_data()` function from the `daff` package. In this case, I recommend trying out both. Think about what the advantages and disadvantages of each are. Which is easier for you to understand? Which is more sensitive? Which guides you to focus on meaningful differences?
 
-'all.equal()' 1. Advantages: Very sensitive to any difference, display data type and structure issues, 2. Disadvantages: Do not show exact values that differ
+`all.equal()`
 
-'diff_data()' 1. Advantages: Show specific cell-level differences, check data content, track changes row-by-row 2. Disadvantages: Do not highlight structural differences
+1.  Advantages: Very sensitive to any difference, display data type and structure issues
+
+2.  Disadvantages: Do not show exact values that differ
+
+`diff_data()`
+
+1.  Advantages: Show specific cell-level differences, check data content, track changes row-by-row
+
+2.  Disadvantages: Do not highlight structural differences
 
 ```{r}
 #| label: compare-datasets
@@ -78,7 +102,6 @@ diff_data(gm.wrangled, gm.wrangled.goal)
 
 # Visualize the differences between two data frames
 render_diff(diff_data(gm.wrangled, gm.wrangled.goal))
-
 ```
 
 ### Notes on comparisons
@@ -91,30 +114,30 @@ There are actually a few places where the goal dataset isn't ideal. You may want
 
 Create a plan to address the differences between the `gm.wrangled` and `gm.wrangled.goal` datasets. What changes do you need to make? What functions will you use to make these changes?
 
-1. Identify missing columns and values
+1.  Identify missing columns and values
     -   Functions used: `setdiff()`, `summarise_all()`, `is.na()`, `if_else_`
     -   Check which columns exist in the goal dataset but not in the starting dataset.
     -   Identify if there are any missing values to handle.
-2. Rename columns and creat missing columns Functions
-    -   Functions used: `rename()`, `mutate()`, `str_sub()`, `str_to_upper()`, 'as.integer()`,
+2.  Rename columns and creat missing columns Functions
+    -   Functions used: `rename()`, `mutate()`, `str_sub()`, `str_to_upper()`, 'as.integer()\`,
     -   `paste0()`, `case_when()`, `factor()`, `str_length()`
     -   By the sequence of the mismatched columns detected by the first step
-3. Reorder columns
+3.  Reorder columns
     -   Function used: `select(all_of(...))`
-4. Manipulate factor levels and filter rows
+4.  Manipulate factor levels and filter rows
     -   Functions used: `mutate()`, `fct_relevel()`, `filter()`, `arrange()`, `desc()`, `case_when()`
-    -   Convert country to character
-    -   Rename continent "Region"
+    -   Convert `country` to character
+    -   Rename `continent` Region
     -   Filter to keep only years: 1992, 1997, 2002, 2007
     -   Arrange rows by continent, then year, then descending life_expectancy
-5. Group calculation
+5.  Group calculation
     -   Functions used: `group_by()`, `mutate()`, `sum()`, `n()`, `dense_rank()`, `ungroup()`
-    -   Calculate columns: continent_avg_life_exp, relative_life_expectancy, population_avg_life_exp
-6. Complex column operation - is_populous
+    -   Calculate columns: `continent_avg_life_exp`, `relative_life_expectancy`, `population_avg_life_exp`
+6.  Complex column operation - `is_populous`
     -   Functions used: `arrange()`, `slice()`, `pull()`, `mutate()`
-    -   Determine how to classify is_populous
-7. Final touches
-8. Final verification and debugging
+    -   Determine how to classify `is_populous`
+7.  Final touches
+8.  Final verification and debugging
 
 ### Suggested functions
 
@@ -146,66 +169,84 @@ Below are some loose, suggested categories of transformations you'll need to mak
 
 The chunk(s) in this category may include things like selecting and renaming columns, filtering rows, and handling missing data.
 
+### Identify Missing Columns and Values
+
 ```{r}
+#| label: check-missing-columns
 
-#| label: initial-manipulation
-#| label: columns selection 
-#| label: find mismatched columns and missing values
-
-# Data Selection
-
-# Identify missing columns and select only relevant ones
+# Identify columns present in goal dataset but missing in current dataset
 mismatched_cols <- setdiff(names(gm.wrangled.goal), names(gm.wrangled))
-
-# Print mismatched columns
 print(mismatched_cols)
 
-# Check missing values
+# Check for missing values in dataset
 missing_values <- gm.wrangled %>%
   summarise_all(~ sum(is.na(.)))
+```
 
-# Print missing values only if there are missing values
+```{r}
+#| label: check-missing-values
+# Print missing values summary only if missing values exist
 if (sum(missing_values) > 0) {
   cat("\nMissing Value Summary:\n")
   print(missing_values)
 } else {
   cat("\nNo missing values found in the dataset.\n")
 }
+```
 
+### Rename and Create Key Variables
+
+```{r}
+#| label: create-country-abbrev
+# [1] "country_abbrev"
+# Create country_abbrev using first 3 letters of country name (uppercase)
+gm.wrangled <- gm.wrangled %>%
+  mutate(country_abbrev = str_to_upper(str_sub(country, 1, 3))) 
 ```
 
 ```{r}
-#| label: columns renaming and handling missing columns
-
-gm.wrangled <- gm.wrangled %>%
-  
-  # [1] "country_abbrev"
-  # Create country_abbrev using first 3 letters of country name (uppercase)
-  mutate(country_abbrev = str_to_upper(str_sub(country, 1, 3))) %>%
-
-  # [2] "population"
-  # Rename `pop` to `population` and convert to integer
+#| label: rename-population
+# [2] "population"
+# Rename `pop` to `population` and convert to integer
+gm.wrangled <- gm.wrangled %>% 
   rename(population = pop) %>%  
-  mutate(population = as.integer(population)) %>%  
+  mutate(population = as.integer(population)) 
+```
 
-  # [3] "population_millions"
-  # Create `population_millions` (convert to millions) and concatenate with "mil."
-  mutate(population_millions = paste0(round(population / 1e6, 2), " mil.")) %>%
-  
-  # [4] "gdp_per_capita"
-  # Rename `gdpPercap` to `gdp_per_capita`
-  rename(gdp_per_capita = gdpPercap) %>%
+```{r}
+#| label: create-population-millions
+# [3] "population_millions"
+# Create `population_millions` (convert to millions) and concatenate with "mil."
+gm.wrangled <- gm.wrangled %>%
+  mutate(population_millions = paste0(round(population / 1e6, 2), " mil."), # arithmetic operator
+         population_millions = str_trim(str_extract(population_millions, "\\d+(\\.\\d+)?\\s*mil\\.?"))
+         )
+```
 
-  # [5] "life_expectancy" 
-  # Rename `lifeExp` to `life_expectancy`
-  rename(life_expectancy = lifeExp) %>%
+```{r}
+#| label: rename-gdp-per-capita  
+# [4] "gdp_per_capita"
+# Rename `gdpPercap` to `gdp_per_capita`
+gm.wrangled <- gm.wrangled %>%
+  rename(gdp_per_capita = gdpPercap) 
+```
 
-  # [6] "development_status"
-  # Based on the goal dataset's apparent classification:
-  # High Income: gdp_per_capita >= 20000
-  # Middle Income: 5000 <= gdp_per_capita < 20000
-  # Low Income: gdp_per_capita < 5000
-  
+```{r}
+#| label: rename-life-expectancy
+# [5] "life_expectancy" 
+# Rename `lifeExp` to `life_expectancy`
+gm.wrangled <- gm.wrangled %>%
+  rename(life_expectancy = lifeExp) 
+```
+
+```{r}
+#| label: classify-development-status
+# [6] "development_status"
+# Based on the goal dataset's apparent classification:
+# High Income: gdp_per_capita >= 20000
+# Middle Income: 5000 <= gdp_per_capita < 20000
+# Low Income: gdp_per_capita < 5000
+gm.wrangled <- gm.wrangled %>% 
   mutate(
     development_status = case_when(
       gdp_per_capita >= 20000 ~ "High Income",
@@ -214,24 +255,36 @@ gm.wrangled <- gm.wrangled %>%
     ),
     development_status = factor(development_status, 
                                 levels = c("High Income", "Middle Income", "Low Income"))
-  ) %>%
-  
-  # [7] "country_length"
-  # Add `country_length` (length of country name)
-  mutate(country_length = str_length(country)) %>%
+  )
+```
 
-  # [8] "economic_score"
-  # [9] "continent_avg_life_exp"
-  # [10] "relative_life_expectancy" 
-  # [11] "population_rank_in_continent"
-  #Placeholder for future calculation and ranking  
+```{r}
+#| label: compute-country-length  
+# [7] "country_length"
+# Add `country_length` (length of country name)
+gm.wrangled <- gm.wrangled %>%
+  mutate(country_length = str_length(country)) 
+```
+
+```{r}
+#| label: create-placeholder-variables
+# [8] "economic_score"
+# [9] "continent_avg_life_exp"
+# [10] "relative_life_expectancy" 
+# [11] "population_rank_in_continent"
+#Placeholder for future calculation and ranking 
+gm.wrangled <- gm.wrangled %>% 
   mutate(
     economic_score = as.numeric(NA),
     continent_avg_life_exp = as.numeric(NA),  
     relative_life_expectancy = as.numeric(NA),  
     population_rank_in_continent = as.integer(NA)  
-  ) %>%
+  ) 
+```
 
+```{r}
+#| label: create-logical-variable
+gm.wrangled <- gm.wrangled %>%
   # [12] "is_rich"
   # Create `is_rich` 
   mutate(is_rich = as.logical(development_status == "High Income")) %>%
@@ -239,45 +292,58 @@ gm.wrangled <- gm.wrangled %>%
   # [13] "is_populous"
   # Create `is_populous` placeholder
   mutate(is_populous = as.logical(NA)) 
-
-glimpse(gm.wrangled)
-
 ```
 
-```{r}
-#| label: reorder the columns and check if the column names are the same
+### Align Column Order
 
+```{r}
+#| label: align-columns
+#| 
+# Reorder columns to match the goal dataset structure
 gm.wrangled <- gm.wrangled %>%
   select(all_of(names(gm.wrangled.goal)))
 
+# Verify column names alignment
 all.equal(names(gm.wrangled), names(gm.wrangled.goal))
-
 ```
 
 ## Factor Manipulation
 
 The chunk(s) in this category may include things like releveling factor variables, creating new factor variables, and implementing conditional factor transformations.
 
+### Standardize Factor Variables
+
 ```{r}
+#| label: standardize-factors
 
-#| label: factor-manipulation
-
-# Factor Manipulation
+# Convert categorical variables and ensure consistency
 gm.wrangled <- gm.wrangled %>%
-  
-  # Convert `country` to character 
-  mutate(country = as.character(country)) %>%
+  mutate(country = as.character(country))  # Ensure `country` remains a character variable
+```
 
-  # Add "Region" to each continent
+### Modify Continent Names
+
+```{r}
+#| label: modify-continent-names
+#| 
+# Modify continent names by adding 'Region' suffix for clarity
+gm.wrangled <- gm.wrangled %>%
   mutate(continent = case_when(
     continent == "Asia" ~ "Asian Region",
     continent == "Europe" ~ "European Region",
     continent == "Africa" ~ "African Region",
     continent == "Americas" ~ "Americas Region",
     continent == "Oceania" ~ "Oceania Region",
-    TRUE ~ as.character(continent) 
-  )) %>%
-  
+    TRUE ~ as.character(continent)
+  ))
+```
+
+### Filter Selected Years and Relevel Factors
+
+```{r}
+#| label: filter-relevel-factors
+
+gm.wrangled <- gm.wrangled %>%
   # Keep only data for selected years
   filter(year %in% c(1992, 1997, 2002, 2007)) %>%
 
@@ -286,31 +352,38 @@ gm.wrangled <- gm.wrangled %>%
     continent = fct_relevel(
       continent, "Asian Region", "European Region", "African Region", "Americas Region", "Oceania Region"
     )
-  ) %>%
+  ) %>% # first context using forcats functions
 
   # Reorder rows based on `continent` and `year`
   arrange(continent, year, desc(life_expectancy))
 
 # Check dataset structure
 diff_data(gm.wrangled, gm.wrangled.goal)
-
 ```
 
 ## String and Numeric Transformations
 
 The chunk(s) in this category may include things like text manipulation, creating compound variables, and implementing mathematical transformations.
 
+### Compute Economic and Demographic Indicators
+
 ```{r}
-
-#| label: string-numeric-transformations
-
-# String and Numeric Transformations
+#| label: compute-indicators
 
 gm.wrangled <- gm.wrangled %>%
   
   # [8] "economic_score"
   # Compute `economic_score` as (GDP per capita * Life Expectancy) / 10
-  mutate(economic_score = round((gdp_per_capita * life_expectancy) / 10, 4)) %>%
+  mutate(economic_score = round((gdp_per_capita * life_expectancy) / 10, 4)
+         )
+```
+
+### Aggregate Population and Life Expectancy Metrics
+
+```{r}
+#| label: aggregate-metrics
+
+gm.wrangled <- gm.wrangled %>%  
   
   # [9] "continent_avg_life_exp"
   # [10] "relative_life_expectancy" 
@@ -331,15 +404,15 @@ gm.wrangled <- gm.wrangled %>%
 
 # Check the structure of transformed dataset
 glimpse(gm.wrangled)
-
 ```
 
 ## Complex Column Operations
 
 The chunk(s) in this category may include things like generating new columns based on multiple existing columns, implementing window functions, and creating summary statistics within groups.
 
-```{r}
+### Assign "is_populous"
 
+```{r}
 #| label: complex-operations
 
 # Complex Column Operations
@@ -371,7 +444,6 @@ threshold_value <- gm.wrangled %>%
 
 gm.wrangled <- gm.wrangled %>%
   mutate(is_populous = population_millions > threshold_value)
-
 ```
 
 ## Final Touches
@@ -405,8 +477,7 @@ str(gm.wrangled.goal)
 Check whether your `gm.wrangled` dataframe is identical to the goal dataframe. Like before, you can use `all_equal()`, `diff_data()`, or another method of your choice.
 
 ```{r}
-#| label: compare-dataframes-again
-#| label: first checkpoint
+#| label: first-checkpoint
 
 # Compare dataframes again
 all.equal(gm.wrangled, gm.wrangled.goal)
@@ -414,8 +485,8 @@ diff_data(gm.wrangled, gm.wrangled.goal)
 ```
 
 ```{r}
-#| label: check differences detected by all.equal
-#| 
+#| label: debugging-all-equal-differences 
+ 
 # [1] "Attributes: < Names: 1 string mismatch >"
 # All TRUE: no differences in actual column names, mismatch is in metadata attributes 
 # Extra pieces of information in gm.wrangled.goal 
@@ -449,8 +520,7 @@ str(attributes(gm.wrangled.goal))
 ```
 
 ```{r}
-#| label: debugging for differences 
-#| label: second checkpoint
+#| label: second-checkpoint
 # [1] "tbl_df"     "tbl"        "data.frame"
 # [1] "spec_tbl_df" "tbl_df"      "tbl"         "data.frame" 
 # Try convert both dataset into tibble "tbl_df"
@@ -470,17 +540,17 @@ diff_data(gm.wrangled, gm.wrangled.goal)
 1.  Are there any differences you tried to solve but weren't able to? How far did you get? What do you think you're missing?
 2.  Are there any differences that the `all.equal()` or `diff_data()` functions identified that you don't think are significant? What are they and what do they mean? Why do you believe they are non-essential?
 
-Since all.equal(gm.wrangled, gm.wrangled.goal) returns TRUE, there are no meaningful differences in the dataset structure and values.
-For Daff comparison, the output also does not indicate any differences. If there are actual differences in those columns, it will show a detailed diff table with indicators of added, removed, or changed cells.
+Since `all.equal(gm.wrangled, gm.wrangled.goal)` returns TRUE, there are no meaningful differences in the dataset structure and values. For Daff comparison, the output also does not indicate any differences. If there are actual differences in those columns, it will show a detailed diff table with indicators of added, removed, or changed cells.
 
-Initially, there were differences reported by all.equal() related to attributes rather than actual data values:
-1. A class mismatch: "gm.wrangled.goal" was a "spec_tbl_df", while "gm.wrangled" was a simpler "tbl_df".
-2. Extra attributes in gm.wrangled.goal: $ spec, $ problems :<externalptr> 
+Initially, there were differences reported by `all.equal()` related to attributes rather than actual data values:
 
-These differences were the attribute-level and class-level differences, which did not affect the actual column data, rows, or values.
-Such differences may caused by how the data frame was read or stored and don’t affect calculations or final results. So I think these attribute differences were non-essential to the dataset’s structure or content.
+1\. A class mismatch: `gm.wrangled.goal` was a `spec_tbl_df`, while "gm.wrangled" was a simpler `tbl_df`.
 
-I addressed these differences by converting both data frames to a plain tibble via as_tibble(). After doing so, all.equal() indicated that the data frames were identical in both structure and data values. There were no unresolved differences left. Once both data frames were converted to plain tibbles, all.equal() returned TRUE, confirming no meaningful data differences remained. Therefore, I ultimately was able to solve the differences and ended up with fully matching datasets. I don’t think I’m missing anything at this point.
+2\. Extra attributes in gm.wrangled.goal: \$ spec, \$ problems :<externalptr>
+
+These differences were the attribute-level and class-level differences, which did not affect the actual column data, rows, or values. Such differences may caused by how the data frame was read or stored and don’t affect calculations or final results. So I think these attribute differences were non-essential to the dataset’s structure or content.
+
+I addressed these differences by converting both data frames to a plain tibble via `as_tibble()`. After doing so, `all.equal()` indicated that the data frames were identical in both structure and data values. There were no unresolved differences left. Once both data frames were converted to plain tibbles, `all.equal()` returned TRUE, confirming no meaningful data differences remained. Therefore, I ultimately was able to solve the differences and ended up with fully matching datasets. I don’t think I’m missing anything at this point.
 
 # OPTIONAL: Unguided cleaning and transformation
 
@@ -494,35 +564,489 @@ You can do these transformations one pipe/chunk or several. Either way, include 
 -   Implementing more complex filtering strategies
 -   Joining with other datasets (hint: figure out which columns are likely to align with other datasets you might find online)
 
+# Global Economic and Demographic Insights
+
+This project focuses on **comprehensive data wrangling and visualization** to explore **global economic and demographic trends**. The key objectives include:
+
+-   Cleaning and transforming data for consistency.
+-   Implementing **logical operators, dplyr, and tidyr** in data preprocessing.
+-   Creating **interactive maps and plots** to enhance interpretability.
+-   Exploring **continent-level and country-level economic trends**.
+-   Analyzing **continent-level and country-level economic indicators**.
+
+## Data Wrangling and Preparation
+
+This section focuses on transforming the `gapminder` dataset by: - **Re-leveling factor variables** for continent and development status categories. - **Cleaning String Variables** to clean country names and population variables. - **Filtering Dataset for 2007** to extract the most recent year (2007). - **Computing aggregated statistics** at the **continent** and **development level**.
+
+### Re-leveling Factor Variables
+
+This step adjusts categorical variables to ensure correct ordering and grouping.
+
 ```{r}
-
-#| label: Create a new dataframe `gm.optional` 
-# For futher analysis, I only want to use the data for year = 2007
+#| label: relevel-factors
+# Create new dataframe `gm.optional`
 gm.optional <- gm.wrangled %>%
-  filter(year == 2007)
+  
+ # Re-level factors (focusing on 2 groups: continet and development status) for further analysis
+  mutate(
+    continent = fct_relevel(
+      continent,
+      "African Region", "Americas Region", "Asian Region", "European Region", "Oceania Region"
+    ),
+    
+    development_status = fct_relevel(
+      development_status,
+      "High Income", "Middle Income", "Low Income"
+    )
+  ) # second context using forcats function
+```
 
-glimpse(gm.optional)
+### Cleaning String Variables
+
+This step removes punctuation from country names to ensure consistency in joins.
+
+```{r}
+#| label: clean-string-variables
+
+gm.optional <- gm.optional %>%
+  # Regex replacement 
+  # Combine dplyr and tidyr in this pipeline
+  # Remove punctuation from the country name (regex usage)
+  mutate(country = str_remove_all(country, "[[:punct:]]")) %>%
+  
+  # Use tidyr's separate() to split "population_millions" into a numeric column
+  separate(
+    col      = population_millions,   
+    into     = c("pop_millions_num"), 
+    sep      = "\\s+",                
+    extra    = "drop",   
+    fill     = "right",  
+    convert  = TRUE       
+  ) 
+```
+
+### Filtering Dataset for 2007
+
+Only the most recent year (2007) is retained for analysis.
+
+```{r}
+#| label: filter-year-2007
+  
+gm.optional <- gm.optional %>%
+  filter(year == 2007)
+```
+
+### Computing Aggregate Statistics
+
+#### 1. *Continent-Level Aggregations*
+
+This step computes the average GDP and population per continent.
+
+```{r}
+#| label: compute-continent-aggregates
+
+ gm.optional <- gm.optional %>%
+  group_by(continent) %>%
+  mutate(
+    continent_avg_population = mean(pop_millions_num, na.rm = TRUE),
+    continent_avg_gdp        = mean(gdp_per_capita, na.rm = TRUE)
+  ) %>%
+  ungroup()
+```
+
+#### 2. *Development Status Aggregations*
+
+This step computes the average GDP and life expectancy per development level.
+
+```{r}
+#| label: compute-development-status-aggregates  
+gm.optional <- gm.optional %>%
+  group_by(development_status) %>%
+  mutate(
+    dev_status_avg_gdp  = mean(gdp_per_capita, na.rm = TRUE),
+    dev_status_avg_life_exp = mean(life_expectancy, na.rm = TRUE)
+  ) %>%
+  ungroup()
+```
+
+## Data Visualization with Interactive Scatter Plot, Bar Plot, and Map
+
+The `interactive_combined_plot()` function generates interactive visualizations combining a scatter plot, bar plot, and choropleth map to explore geographic trends in economic and demographic data. Users can visualize GDP per capita, population, or other numeric variables at different geographic levels such as countries or continents.
+
+The function requires three inputs: a dataset, a numeric variable (e.g., `gdp_per_capita`), and a geographic unit (e.g., `continent` or `country`).
+
+The interactive elements allow users to hover over points, bars, and map regions to display tooltips with additional information. Clicking on a data point highlights it across all three visualizations, and the map supports zooming and panning for closer inspection.
+
+### Setting Up for Visualization
+
+To create **interactive choropleth maps**, I use:
+
+-   `ggplot2` for **base mapping**.
+
+-   `maps::map_data("world")` to obtain **geospatial data**.
+
+-   `ggiraph` for **interactive visualization**.
+
+```{r}
+#| label: setup-map-visualization
+
+# Load required visualization libraries
+library(ggplot2)
+library(maps)
+source("plotting-function-map.R")
+```
+
+### Preparing the Map Data
+
+```{r}
+#| label: prepare-map-data
+
+# Load world map
+mapdata <- map_data("world") %>%
+  mutate(region = as.character(region)) %>%
+  left_join(gm.optional, by = c("region" = "country")) %>%
+
+# Convert numeric variables 
+  mutate(
+    gdp_per_capita = as.numeric(gdp_per_capita),
+    population = as.numeric(population)
+  ) %>%
+  
+  filter(!is.na(continent))
+```
+
+### Interactive Maps by Region
+
+The following examples demonstrate how `interactive_combined_plot()` works with different geographic levels and variables:
+
+#### 1. *Population Distribution in Asia*
+
+```{r}
+#| label: map-asia-population
+
+mapdata_asia <- mapdata %>%
+  filter(continent == "Asian Region" & !is.na(country_abbrev)) # logical operator
+
+# Call the interactive plotting function
+interactive_plot <- interactive_combined_plot(
+  data         = mapdata_asia,
+  var          = "pop_millions_num",  
+  geo_unit  = "region"
+)
+
+# Display the interactive plot
+interactive_plot
+```
+
+#### 2. *GDP Distribution in Europe*
+
+```{r}
+#| label: map-europe-gdp
+
+mapdata_european <- mapdata %>%
+  filter(continent == "European Region" & !is.na(country_abbrev))
+
+# Call the interactive plotting function
+interactive_plot <- interactive_combined_plot(
+  data         = mapdata_european,
+  var          = "gdp_per_capita",  
+  geo_unit  = "region"
+)
+
+# Display the interactive plot
+interactive_plot
+```
+
+#### 3. *Continent-Level Economic Trends*
+
+```{r}
+#| label: map-continent-gdp
+
+# Call the interactive plotting function
+interactive_plot <- interactive_combined_plot(
+  data         = mapdata,
+  var          = "continent_avg_gdp",  
+  geo_unit  = "continent"
+)
+
+# Display the interactive plot
+interactive_plot
+```
+
+## Data Analysis
+
+This section includes descriptive statistics, hypothesis testing, and regression analyses to explore relationships between population size, income level, and life expectancy.
+
+### Set up for Data Analysis
+
+```{r}
+#| label: setup-data-analysis
+library(knitr)        # Rendering tables
+library(kableExtra)   # Formatting tables
+library(broom)        # Tidy regression results
+library(effectsize)   # Compute effect sizes
+library(flextable)    # APA-style tables
+```
+
+### Descriptive Analysis and Tables
+
+Before conducting hypothesis testing, I summarize key variables to understand the dataset better.
+
+#### 1. Summary statistics for a numeric variable
+
+Compute summary statistics (mean, SD, min, max) for two key numerical variables:
+
+-   Population
+
+-   Life Expectancy
+
+```{r}
+#| label: compute-numeric-summary
+# Compute summary statistics for population and life expectancy
+num_summary <- gm.optional %>%
+  summarise(
+    across(
+      c(population, life_expectancy),
+      list(
+        Mean = ~ round(mean(.x, na.rm = TRUE), 2),
+        SD   = ~ round(sd(.x, na.rm = TRUE), 2),
+        Min  = ~ round(min(.x, na.rm = TRUE), 2),
+        Max  = ~ round(max(.x, na.rm = TRUE), 2)
+      ),
+      .names = "{.col}_{.fn}"  # Adjusted naming for consistency
+    )
+  ) %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = c("Variable", "Statistic"),
+    names_pattern = "(.*)_(Mean|SD|Min|Max)"
+  ) %>%
+  pivot_wider(names_from = "Statistic", values_from = "value")
+```
+
+#### 2. Summary table for a numeric variable
+
+```{r}
+#| label: table-numeric-summary
+num_summary_final <- num_summary %>%
+  mutate(
+    Variable = recode(Variable,
+      "population"      = "Population (millions)",
+      "life_expectancy" = "Life Expectancy (years)"
+    ),
+    across(c(Mean, SD, Min, Max), ~ ifelse(Variable == "Population (millions)", .x / 1e6, .x))
+  )
 ```
 
 ```{r}
-#| label: custom-summary-function
-
-# This function groups a data frame by 'grouping_var' and calculates
-# mean and sd of 'measure_var'.
-custom_summary <- function(df, grouping_var, measure_var) {
-  df %>%
-    group_by({{ grouping_var }}) %>%
-    summarize(
-      mean_value = mean({{ measure_var }}, na.rm = TRUE),
-      sd_value   = sd({{ measure_var }}, na.rm = TRUE),
-      .groups = "drop"
-    )
+#| label: table-1
+if (knitr::is_latex_output()) {
+  knitr::kable(num_summary_final, format = "latex", booktabs = TRUE, digits = 2,
+               caption = "Table 1. Descriptive Statistics for Population and Life Expectancy") %>%
+  kableExtra::kable_styling(latex_options = c("hold_position", "striped"))
+} else {
+   flextable(num_summary_final) %>%
+    set_caption("Table 1. Summary Statistics of Gapminder Data") %>%
+    autofit()
 }
+```
 
-# Example usage (make sure gm.optional exists):
-summary_table <- custom_summary(gm.optional, continent, life_expectancy)
-summary_table
+Table 1 presents the descriptive statistics for population and life expectancy. The average population size is 44.02 million (SD = 147.62 million), with a minimum of 0.2 million and a maximum of 1.3 billion. The average life expectancy is 67.01 years (SD = 12.07 years), ranging from 39.61 to 82.60 years.
 
+#### 3. Summary statistics for a categorical variable
+
+Summarize three categorical variables:
+
+-   Countries
+
+-   Continents
+
+-   Development status
+
+```{r}
+#| label: compute-categorical-summary
+# Compute categorical summaries for development status
+cat_summary <- gm.optional %>%
+  summarise(
+    `Total Countries` = sum(!is.na(country)),  
+    `Total Continents` = n_distinct(continent, na.rm = TRUE),  # Fix missing Unique Continents count
+    `Proportion of Low-Income Countries (%)` = round(100 * mean(development_status == "Low Income", 
+                                                                na.rm = TRUE), 1),
+    `Proportion of Middle-Income Countries (%)` = round(100 * mean(development_status == "Middle Income",
+                                                                na.rm = TRUE), 1),
+    `Proportion of High-Income Countries (%)` = round(100 * mean(development_status == "High Income",
+                                                                na.rm = TRUE), 1)
+  ) %>%
+  pivot_longer(cols = everything(), names_to = "Category", values_to = "Frequency")
+```
+
+#### 4. Summary table for a categorical variable
+
+```{r}
+#| label: table-categorical-summary
+# Format and display categorical summary table with proper APA styling and captions
+cat_summary %>%
+  mutate(Frequency = ifelse(Category %in% c("Total Countries", "Unique Continents"),
+                            round(Frequency, 0),  # No decimals for absolute counts
+                            round(Frequency, 1)))  # Keep 1 decimal for proportions
+```
+
+```{r}
+# Conditional formatting for different output types
+if (knitr::is_latex_output()) {
+  knitr::kable(cat_summary, format = "latex", booktabs = TRUE, digits = 2,
+               caption = "Table 2. Frequency of Countries by Income Level and Continent") %>%
+  kableExtra::kable_styling(latex_options = c("hold_position", "striped"))
+} else {
+   flextable(cat_summary) %>%
+    set_caption("Table 2. Frequency of Countries by Income Level and Continent") %>%
+    autofit()
+}
+```
+
+Table 2 presents the frequency of countries by continent and income classification. The dataset includes 142 countries spanning 5 continents. Among them, 46.5% are classified as low-income, 30.3% as middle-income, and 23.2% as high-income.
+
+### Hypothesis Testing Analyses and Facet Plots
+
+#### 1. Regression Analysis: Effect of Population Size and Income Level on Life Expectancy
+
+**Hypothesis 1 (Multiple Linear Regression)**
+
+Null Hypothesis: There is no relationship between life expectancy and the predictors (log-transformed population size and income level).
+
+Alternative Hypothesis: Life expectancy is significantly predicted by population size and/or income level.
+
+Performs a multiple linear regression where life expectancy is the dependent variable, and predictors include: Log-transformed population size and income level (categorical predictor with High Income as the reference level).
+
+```{r}
+#| label: regression-life-expectancy
+gm.optional <- gm.optional %>%
+  mutate(development_status = relevel(factor(development_status), ref = "High Income"))
+
+lm_result <- lm(life_expectancy ~ log(population) + development_status, data = gm.optional)
+summary(lm_result)
+```
+
+```{r}
+# Convert regression results to a tidy format
+#| label: table-regression-results-flextable
+regression_table <- tidy(lm_result, conf.int = TRUE) %>%
+  select(term, estimate, std.error, conf.low, conf.high, p.value) %>%
+  mutate(
+    term = recode(term,
+      "(Intercept)" = "Intercept",
+      "log(population)" = "Log(Population Size)",
+      "development_statusMiddle Income" = "Middle Income",
+      "development_statusHigh Income" = "High Income",
+      "development_statusLow Income" = "Low Income"
+    ),
+    p.value = ifelse(p.value < 0.001, "<0.001", round(p.value, 3))  # Format p-values
+  ) %>%
+  rename(
+    Predictor = term, 
+    B = estimate, 
+    SE = std.error, 
+    "95% CI (Lower)" = conf.low, 
+    "95% CI (Upper)" = conf.high, 
+    "p-value" = p.value
+  )
+
+```
+
+```{r}
+# Display as an APA-style table using knitr::kable()
+if (knitr::is_latex_output()) {
+  knitr::kable(regression_table, format = "latex", booktabs = TRUE, digits = 2,
+               caption = "Table 3. Linear Regression Results: Predicting Life Expectancy") %>%
+  kableExtra::kable_styling(latex_options = c("hold_position", "striped"))
+} else {
+   flextable(regression_table) %>%
+    set_caption("Table 3. Linear Regression Results: Predicting Life Expectancy") %>%
+    autofit()
+}
+```
+
+```{r}
+#| label: plot-population-trends
+ggplot(gm.optional, aes(x = log(population), y = life_expectancy, color = development_status)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +  # Adds regression lines
+  facet_grid(. ~ development_status) +  # Side-by-side comparison for income levels
+  labs(title = "Effect of Population on Life Expectancy by Income Level",
+       x = "Log(Population Size)",
+       y = "Life Expectancy (years)",
+       color = "Income Level") +
+  theme_minimal(base_size = 14) +  # Increase overall readability
+  theme(
+  plot.title = element_text(size = 16, face = "bold", hjust = 0.5),  # Center bold title
+  axis.title = element_text(size = 14),  # Larger axis labels
+  axis.text.x = element_text(size = 12, angle = 45, hjust = 1),  # Rotate if needed
+  axis.text.y = element_text(size = 12),
+  legend.text = element_text(size = 12),
+  legend.title = element_text(size = 14, face = "bold")
+)
+
+
+```
+
+#### 2. ANOVA: Differences in Life Expectancy Across Income Levels
+
+Hypothesis 2 (One-Way ANOVA)
+
+Null Hypothesis: There is no significant difference in life expectancy across different income levels.
+
+Alternative Hypothesis: At least one income level has a significantly different life expectancy from the others.
+
+Conducts a one-way ANOVA to compare life expectancy across three income groups. If significant, it suggests that income level influences life expectancy.
+
+```{r}
+#| label: test-life-expectancy-income
+anova_result <- aov(life_expectancy ~ development_status, data = gm.optional)
+summary(anova_result)
+```
+
+```{r}
+#| label: table-anova-results-apa
+anova_table <- tidy(anova_result) %>%
+  select(term, df, sumsq, meansq, statistic, p.value) %>%
+  mutate(
+    term = recode(term, "development_status" = "Income Level"),  # Rename variable
+    p.value = ifelse(p.value < 0.001, "<.001", round(p.value, 3))  # Format p-values correctly
+  ) %>%
+  rename(
+    Predictor = term, 
+    "DF" = df,
+    "Sum of Squares" = sumsq, 
+    "Mean Square" = meansq,
+    "F-value" = statistic, 
+    "p-value" = p.value
+  )
+```
+
+```{r}
+# Display APA-style table using `kable()`
+if (knitr::is_latex_output()) {
+  knitr::kable(anova_table, format = "latex", booktabs = TRUE, digits = 2,
+               caption = "Table 4. ANOVA Results: Life Expectancy Differences Across Income Levels") %>%
+  kableExtra::kable_styling(latex_options = c("hold_position", "striped"))
+} else {
+   flextable(anova_table) %>%
+    set_caption("Table 4. ANOVA Results: Life Expectancy Differences Across Income Levels") %>%
+    autofit()
+}
+```
+
+```{r}
+#| label: plot-population-life_expectancy
+ggplot(gm.optional, aes(x = development_status, y = life_expectancy, fill = development_status)) +
+  geom_boxplot(alpha = 0.6, position = position_dodge(width = 0.75)) +  # Adjusts box positions
+  facet_wrap(~ continent) +  # Facet by continent for regional insights
+  labs(title = "Life Expectancy Across Income Levels by Continent",
+       x = "Income Level",
+       y = "Life Expectancy (years)",
+       fill = "Income Level") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotates labels for readability
 
 ```
 
@@ -533,11 +1057,12 @@ If you would like to export your dataframe(s) to a .csv file, you can use the `w
 ```{r}
 #| label: export-data
 
+library(readr)
 # Write gm.wrangled to a .csv file
-
+write_csv(gm.wrangled, "gm_wrangled.csv")
 
 # Write gm.optional to a .csv file
-
+write_csv(gm.optional, "gm_optional.csv")
 
 ```
 
