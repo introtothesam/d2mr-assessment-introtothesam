@@ -550,11 +550,11 @@ A key challenge I faced was Git not tracking empty directories. Initially, I cre
 -   Points toward unique objectives (up to 20): 5
 -   Additional points (up to 20): 5
 -   TA provisional engagement points (up to 10): 3
--   Final approved engagement points (up to 10):
--   Total points (up to 50):
+-   Final approved engagement points (up to 10): 3
+-   Total points (up to 50): 13
 
 Engagement points are awarded for going above and beyond the expectations of the project and are not guaranteed on any given submission. Demonstrating the assessed learning objectives earns you points in those categories, but engagement points are awarded for exceptional effort, creativity, or skill.
 
 TAs may recommend engagement points provisionally, but the instructor will make the final decision on engagement points.
 
-Additional comments:
+Additional comments: ND - nice work! Just want to say it drives me crazy that git ignores empty directories by default. I'm glad you got .gitkeep to work, because I usually just resort to adding in dummy files...which is not great.
