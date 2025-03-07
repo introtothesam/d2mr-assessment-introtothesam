@@ -78,7 +78,7 @@ Below each learning objective is a list of general expectations for meeting that
         -   [x] Objective attempt
         -   [ ] Unique objective attempt
         -   [ ] Objective met
-        -   Grader comments:
+        -   Grader comments: It doesn't seem to me that the .gitignore file is included in the project. Please let me know if you have any questions about this.
 
 4.  Effectively use version control
 
@@ -88,7 +88,7 @@ Below each learning objective is a list of general expectations for meeting that
 
         -   [x] Objective attempt
         -   [ ] Unique objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 ### R programming
@@ -101,7 +101,7 @@ Below each learning objective is a list of general expectations for meeting that
 
         -   [ ] Objective attempt
         -   [x] Unique objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 6.  Use arithmetic, comparison, and logical operators
@@ -112,7 +112,7 @@ Below each learning objective is a list of general expectations for meeting that
 
         -   [ ] Objective attempt
         -   [x] Unique objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 7.  Parse and define functions and arguments
@@ -125,7 +125,7 @@ Below each learning objective is a list of general expectations for meeting that
 
         -   [ ] Objective attempt
         -   [x] Unique objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 8.  Parse and write conditional statements and/or loops
@@ -136,7 +136,7 @@ Below each learning objective is a list of general expectations for meeting that
 
         -   [ ] Objective attempt
         -   [x] Unique objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 ### Tidyverse
@@ -149,7 +149,7 @@ Below each learning objective is a list of general expectations for meeting that
 
         -   [ ] Objective attempt
         -   [x] Unique objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 10. Use `dplyr` and `tidyr` functions to transform data
@@ -162,7 +162,7 @@ Below each learning objective is a list of general expectations for meeting that
 
         -   [ ] Objective attempt
         -   [x] Unique objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 11. Use `stringr` functions to work with string variables
@@ -173,7 +173,7 @@ Below each learning objective is a list of general expectations for meeting that
 
         -   [ ] Objective attempt
         -   [x] Unique objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 12. Use `forcats` functions to work with factor variables
@@ -184,7 +184,7 @@ Below each learning objective is a list of general expectations for meeting that
 
         -   [ ] Objective attempt
         -   [x] Unique objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 ### Data visualization with ggplot2
@@ -197,7 +197,7 @@ Below each learning objective is a list of general expectations for meeting that
 
         -   [ ] Objective attempt
         -   [x] Unique objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 14. Use dynamic aesthetics to group data
@@ -206,7 +206,7 @@ Below each learning objective is a list of general expectations for meeting that
 
         -   [ ] Objective attempt
         -   [x] Unique objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 15. Use facets to create parallel plots
@@ -217,7 +217,7 @@ Below each learning objective is a list of general expectations for meeting that
 
         -   [ ] Objective attempt
         -   [x] Unique objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 16. Create publication-quality plots using `theme` and `labs` layers
@@ -232,7 +232,7 @@ Below each learning objective is a list of general expectations for meeting that
 
         -   [ ] Objective attempt
         -   [x] Unique objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 ### Data analysis
@@ -247,7 +247,7 @@ Below each learning objective is a list of general expectations for meeting that
 
         -   [ ] Objective attempt
         -   [x] Unique objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 18. Perform simple hypothesis testing analyses for multiple data types
@@ -260,7 +260,7 @@ Below each learning objective is a list of general expectations for meeting that
 
         -   [ ] Objective attempt
         -   [x] Unique objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 19. Present and interpret statistics in manuscript narrative
@@ -324,7 +324,7 @@ Below each learning objective is a list of general expectations for meeting that
 
         -   [ ] Objective attempt
         -   [x] Unique objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 23. Use code chunks to set up a quarto document
@@ -339,7 +339,7 @@ Below each learning objective is a list of general expectations for meeting that
 
         -   [ ] Objective attempt
         -   [x] Unique objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 24. Render publication-quality tables, figures, and images from code chunks
@@ -373,7 +373,7 @@ Below each learning objective is a list of general expectations for meeting that
 
         -   [ ] Objective attempt
         -   [x] Unique objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 ### R Markdown and quarto
@@ -385,7 +385,7 @@ Below each learning objective is a list of general expectations for meeting that
         -   [ ] Objective attempt
         -   [x] Unique objective attempt
         -   [ ] Objective met
-        -   Grader comments:
+        -   Grader comments: You do have a YAML header, but not for an APA styled document. Please let me know if you have any questions about this.
 
 27. Use quarto R Markdown to compose an academic manuscript
 
@@ -397,10 +397,10 @@ Below each learning objective is a list of general expectations for meeting that
 
     4.  Includes at least 1 footnote
 
-        -   [ ] Objective attempt
-        -   [x] Unique objective attempt
-        -   [ ] Objective met
-        -   Grader comments:
+        -   [x] Objective attempt
+        -   [ ] Unique objective attempt
+        -   [x] Objective met
+        -   Grader comments: Missed the footnote though.
 
 28. Use inline R variables to replace static text
 
@@ -553,11 +553,11 @@ The most satisfying part of the project was seeing how data wrangling, visualiza
 
 ## Grader feedback
 
--   Grader:
--   Date:
--   Points toward unique objectives (up to 20):
--   Additional points (up to 20):
--   TA provisional engagement points (up to 10):
+-   Grader: Yuchen Jin
+-   Date: March 7, 2025
+-   Points toward unique objectives (up to 20): 17
+-   Additional points (up to 20): 20
+-   TA provisional engagement points (up to 10): 7
 -   Final approved engagement points (up to 10):
 -   Total points (up to 50):
 

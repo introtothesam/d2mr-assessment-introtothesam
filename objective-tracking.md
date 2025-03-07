@@ -15,29 +15,29 @@ This document tracks your progress meeting 20 unique objectives across all mini-
 
 ## R programming
 
-5.  [ ] Find, install, require, and load R packages
-6.  [ ] Use arithmetic, comparison, and logical operators
-7.  [ ] Parse and define functions and arguments
-8.  [ ] Parse and write conditional statements and/or loops
+5.  [x] Find, install, require, and load R packages
+6.  [x] Use arithmetic, comparison, and logical operators
+7.  [x] Parse and define functions and arguments
+8.  [x] Parse and write conditional statements and/or loops
 
 ## Tidyverse
 
-9.  [ ] Use `readr` functions to read in and write out data
-10. [ ] Use `dplyr` and `tidyr` functions to transform data
-11. [ ] Use `stringr` functions to work with string variables
-12. [ ] Use `forcats` functions to work with factor variables
+9.  [x] Use `readr` functions to read in and write out data
+10. [x] Use `dplyr` and `tidyr` functions to transform data
+11. [x] Use `stringr` functions to work with string variables
+12. [x] Use `forcats` functions to work with factor variables
 
 ## Data visualization with ggplot2
 
-13. [ ] Produce 1- and 2-variable plots with `geom_*` layers
-14. [ ] Use dynamic aesthetics to group data
-15. [ ] Use facets to create parallel plots
-16. [ ] Create publication-quality plots using `theme` and `labs` layers
+13. [x] Produce 1- and 2-variable plots with `geom_*` layers
+14. [x] Use dynamic aesthetics to group data
+15. [x] Use facets to create parallel plots
+16. [x] Create publication-quality plots using `theme` and `labs` layers
 
 ## Data analysis
 
-17. [ ] Perform simple descriptive analyses with multiple data types
-18. [ ] Perform simple hypothesis testing analyses for multiple data types
+17. [x] Perform simple descriptive analyses with multiple data types
+18. [x] Perform simple hypothesis testing analyses for multiple data types
 19. [ ] Present and interpret statistics in manuscript narrative
 
 ## BibTeX
@@ -47,10 +47,10 @@ This document tracks your progress meeting 20 unique objectives across all mini-
 
 ## Notebooks and code chunks
 
-22. [ ] Create and effectively use code chunks following best practices
-23. [ ] Use code chunks to set up a quarto document
+22. [x] Create and effectively use code chunks following best practices
+23. [x] Use code chunks to set up a quarto document
 24. [ ] Render publication-quality tables, figures, and images from code chunks
-25. [ ] Execute descriptive analyses and/or hypothesis testing in code chunks
+25. [x] Execute descriptive analyses and/or hypothesis testing in code chunks
 
 ## R Markdown and Quarto
 
