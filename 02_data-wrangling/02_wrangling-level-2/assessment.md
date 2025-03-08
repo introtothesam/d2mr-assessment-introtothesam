@@ -555,14 +555,15 @@ The most satisfying part of the project was seeing how data wrangling, visualiza
 
 -   Grader: Yuchen Jin
 -   Date: March 7, 2025
--   Points toward unique objectives (up to 20): 17
--   Additional points (up to 20): 20
--   TA provisional engagement points (up to 10): 7
--   Final approved engagement points (up to 10):
--   Total points (up to 50):
+-   Points toward unique objectives (up to 20): ~~17~~ 15 (max)
+-   Additional points (up to 20): ~~20~~ 15 (max)
+-   TA provisional engagement points (up to 10): 7 
+-   Final approved engagement points (up to 10): 7 (max)
+-   Total points (up to 50): 37 (max all!)
 
 Engagement points are awarded for going above and beyond the expectations of the project and are not guaranteed on any given submission. Demonstrating the assessed learning objectives earns you points in those categories, but engagement points are awarded for exceptional effort, creativity, or skill.
 
 TAs may recommend engagement points provisionally, but the instructor will make the final decision on engagement points.
 
 Additional comments:
+ND -- great job, chenyi!
